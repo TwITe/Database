@@ -46,7 +46,7 @@ bool is_datafile_full(int i) {
 template <typename T>
 void store(int id, void* data) {
     ;
-    void* arr = malloc(sizeof(data));
+    void* byte_array = data;
     check_path();
     users[id].push_back(filename);
     ofstream datafile;
