@@ -1,8 +1,7 @@
 //It's database library
 //Use the function "set_filesize" to set a default size of the data file
 //Use the function "set_path" to set path for saving data files
-//#ifndef DATABASE_LIBRARY_H
-//#define DATABASE_LIBRARY_H
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -14,61 +13,75 @@
 using namespace std;
 
 string filename = "data0";
-string path;
-int num = 0;
+string user_path;
+const char* full_path;
+int num = -1;
 int default_filesize = 1;
-//unordered_map <int, <vector <string>>> users;
+unordered_map <int, vector <string> > users;
 
 void set_path(const string &saving_path) {
-    path = saving_path;
+	user_path = saving_path;
+}
+
+char get_full_path() {
+	num++;
+	filename = "data" + to_string(num);
+	user_path = user_path + filename + ".txt";
+	full_path = user_path.c_str();
 }
 
 void set_filesize(int user_size) {
-    default_filesize = user_size;
+	default_filesize = user_size;
 }
 
-void check_path() {
-    if (path.empty()) {
-        throw std::runtime_error("path is invalid");
-    }
+void check_path() {	
+	if (user_path.empty()) {
+		throw runtime_error("path is invalid");
+	}
 }
 
-bool is_datafile_full(int i) {
-    if (i == default_filesize) {
-        num++;
-        filename = "data" + to_string(num);
-        return true;
-    }
-    return false;
+//bool is_datafile_full(const string& filename) {
+//	ifstream current_file("tes	t.txt", std::ifstream::binary);
+//	if (current_file) {
+//		// get length of file:
+//		current_file.seekg(0, current_file.end);
+//		int length = current_file.tellg();
+//		current_file.seekg(0, current_file.beg);
+//		return true;
+//	}
+//}
+
+void write_id(int id) {
+
 }
 
-template <typename T>
-void store(int id, void* data) {
-    ;
-    void* byte_array = data;
-    check_path();
-    users[id].push_back(filename);
-    ofstream datafile;
-    datafile.open(path + filename + ".txt");
-    users[id].push_back(filename);
-    for (int i= 0; i < sizeof(T); i++) {
-        datafile << bytes[i];
-        if ((is_datafile_full(i))) {
-            datafile.close();
-            users[id].push_back(filename);
-            datafile.open(path + filename + ".txt");
-        }
-    }
-    datafile.close();
+int file_free_space() {
+	ifstream current_file("test.txt", std::ifstream::binary);
+	current_file.seekg(0, current_file.end);
+	int length = current_file.tellg();
+	current_file.seekg(0, current_file.beg);
+	return default_filesize - length;
 }
 
-template <typename T>
-T load(int id) {
-    bitset <sizeof(T)> return_value;
-    ofstream datafile;
-    for (auto filename: users[id]) {
-        datafile.open(path + filename + ".txt");
-
-    }
+void write_data(void* data, int array_length) {
+	int free_space = file_free_space();
+	get_full_path();
+	FILE * pFile;
+	if ()
+	pFile = fopen(full_path, "rw");
+	fwrite(&data, sizeof(data), free_space / sizeof(data), pFile);
+	fclose(pFile);
+	int current_data_size = array_length * sizeof(data);
+	if (current_data_size <= free_space) {
+		
+	}
 }
-//#endif
+
+void store(int id, void* data, int array_length) {
+	write_id(id);
+	write_data(data, array_length);
+}
+
+void load(int id) {
+	
+}
