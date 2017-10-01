@@ -1,24 +1,23 @@
 //It's database library
 //Use the function "set_filesize" to set a default size of the data file
 //Use the function "set_path" to set path for saving data files
-#ifndef DATABASE_LIBRARY_H
-#define DATABASE_LIBRARY_H
+//#ifndef DATABASE_LIBRARY_H
+//#define DATABASE_LIBRARY_H
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <cassert>
-#include <bitset>
 #include <map>
 #include <unordered_map>
 #include <vector>
 #include <set>
-
 using namespace std;
+
 string filename = "data0";
 string path;
 int num = 0;
 int default_filesize = 1;
-unordered_map <int, <vector<string>> > users;
+//unordered_map <int, <vector <string>>> users;
 
 void set_path(const string &saving_path) {
     path = saving_path;
@@ -72,5 +71,4 @@ T load(int id) {
 
     }
 }
-
-#endif
+//#endif
