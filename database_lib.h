@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 //It's database library
 //Use the function "set_data_filesize" to set a default size of the data file
 //Use the function "set_path" to set path for saving data files
@@ -115,7 +114,7 @@ void store(int id, void* data, int array_length) {
 void* load(int id) {
 	FILE * data_file;
 	int current_data_size = indexes[id].data_size;
-	void* return_data = new void*[current_data_size];	
+	void* return_data = new void*[current_data_size];
 	for (int i = 0; i < indexes[id].file_names.size(); i++) {
 		const char* current_filename = indexes[id].file_names[i].c_str();
 		int start_reading_position = indexes[id].start_reading_positions[i];
@@ -130,3 +129,4 @@ void* load(int id) {
 		fclose(data_file);
 	}
 	return return_data;
+}
