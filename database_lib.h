@@ -34,18 +34,22 @@ bool check_path() {
 
 bool check_settings() {
 	check_path();
+	return true;
 }
 
 bool set_data_file_size(int user_data_size) {
 	data_file_size = user_data_size;
+	return true;
 }
 
 bool set_map_size(int user_map_size) {
 	map_memory_size = user_map_size;
+	return true;
 }
 
 bool set_path(const string &saving_path) {
 	user_path = saving_path;
+	return true;
 }
 
 string get_new_file_path() {
@@ -57,12 +61,14 @@ string get_new_file_path() {
 
 bool save_current_data_size(int id, int current_data_size){
 	indexes[id].data_size = current_data_size;
+	return true;
 }
 
 bool save_file_name_and_reading_position(int id, const string& current_filename, int start_position, int end_position) {
 	indexes[id].file_names.push_back(current_filename);
 	indexes[id].start_reading_positions.push_back(start_position);
 	indexes[id].end_reading_positions.push_back(end_position);
+	return true;
 }
 
 unsigned int get_file_free_space(const string& current_file_name) {
@@ -122,6 +128,7 @@ bool storage(int id, void* data, int array_length) {
 bool store(int id, void* data, int array_length) {
 	check_settings();
 	storage(id, data, array_length);
+	return true;
 }
 
 void* load(int id) {
