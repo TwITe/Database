@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <vector>
 #include <set>
+#include <array>
 using namespace std;
 
 struct index {
@@ -18,6 +19,7 @@ struct index {
 	vector <int> start_reading_positions;
 	vector <int> end_reading_positions;
 	int data_size;
+	bool deleted;
 };
 
 string user_path;
@@ -37,19 +39,16 @@ bool check_settings() {
 	return true;
 }
 
-bool set_data_file_size(int user_data_size) {
+void set_data_file_size(int user_data_size) {
 	data_file_size = user_data_size;
-	return true;
 }
 
-bool set_map_size(int user_map_size) {
+void set_map_size(int user_map_size) {
 	map_memory_size = user_map_size;
-	return true;
 }
 
-bool set_path(const string &saving_path) {
+void set_path(const string &saving_path) {
 	user_path = saving_path;
-	return true;
 }
 
 string get_new_file_path() {
@@ -64,7 +63,7 @@ bool save_current_data_size(int id, int current_data_size){
 	return true;
 }
 
-bool save_file_name_and_reading_position(int id, const string& current_filename, int start_position, int end_position) {
+bool save_file_name_and_reading_positions(int id, const string& current_filename, int start_position, int end_position) {
 	indexes[id].file_names.push_back(current_filename);
 	indexes[id].start_reading_positions.push_back(start_position);
 	indexes[id].end_reading_positions.push_back(end_position);
@@ -83,35 +82,63 @@ unsigned int get_file_free_space(const string& current_file_name) {
 	return data_file_size - current_data_file_size;
 }
 
-bool write_data(int id, void* data, int current_data_size) {
-	int last_written_byte_position = 0;
+bool check_if_current_id_was_deleted(int id) {
+	if (indexes[id].deleted == true) {
+		return true;
+	}
+}
+
+bool check_if_current_id_is_already_exists(int id) {
+	if (indexes.count(id) == 1) {
+		return true;
+	}
+	return false;
+}
+
+void is_data_size_invalid(int current_data_size) {
+	if (current_data_size < 0) {
+		cerr << "The data size is invalid, please check it";
+	}
+}
+
+void write_data(void* data, FILE * data_file, int last_written_byte_position, int bytes_number_to_write, const string& current_file, int id) {
+	long int start_position = ftell(data_file);
+	fwrite(((void*)((char*)data + last_written_byte_position)), 1, bytes_number_to_write, data_file);
+	long int end_position = ftell(data_file);
+	save_file_name_and_reading_positions(id, current_file, start_position, end_position);
+}
+
+void delete_data(int id) {
+	indexes.erase(id);
+	indexes[id].deleted = true;
+}
+
+bool store_data(int id, void* data, int current_data_size) {
 	FILE * data_file = NULL;
 	string current_file;
+	int last_written_byte_position = 0;
 	while (current_data_size != 0) {
 		if (data_file == NULL) {
 			current_file = get_new_file_path();
 		}
 		data_file = fopen(current_file.c_str(), "a+b");
-		unsigned int free_space = get_file_free_space(current_file);
-		if (free_space == 0) {
+		unsigned int file_free_space = get_file_free_space(current_file);
+		if (file_free_space == 0) {
 			current_file = get_new_file_path();
 			data_file = fopen(current_file.c_str(), "a+b");
 		}
-		if (current_data_size > free_space) {
-			long int start_position = ftell(data_file);
-			fwrite(((void*)((char*)data + last_written_byte_position)), 1, free_space, data_file);
-			long int end_position = ftell(data_file);
-			save_file_name_and_reading_position(id, current_file, start_position, end_position);
-			last_written_byte_position += free_space;
-			current_data_size -= free_space;
+		int bytes_number_to_write;
+		if (current_data_size > file_free_space) {
+			bytes_number_to_write = file_free_space;
+			write_data(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, id);
+			last_written_byte_position += bytes_number_to_write;
 		}
 		else {
-			long int start_position = ftell(data_file);
-			fwrite(((void*)((char*)data + last_written_byte_position)), 1, current_data_size, data_file);
-			long int end_position = ftell(data_file);
-			save_file_name_and_reading_position(id, current_file, start_position, end_position);
-			current_data_size -= current_data_size;
+			bytes_number_to_write = current_data_size;
+			write_data(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, id);
 		}
+		current_data_size -= bytes_number_to_write;
+		is_data_size_invalid(current_data_size);
 		fclose(data_file);
 		data_file = NULL;
 	}
@@ -119,9 +146,13 @@ bool write_data(int id, void* data, int current_data_size) {
 }
 
 bool storage(int id, void* data, int array_length) {
-	unsigned int current_data_size = array_length * sizeof(data);
+	if (check_if_current_id_is_already_exists(id)) {
+		delete_data(id);
+	}
+	unsigned int current_data_size = array_length * 4;
 	save_current_data_size(id, current_data_size);
-	write_data(id, data, current_data_size);
+	store_data(id, data, current_data_size);
+	indexes[id].deleted = false;
 	return true;
 }
 
@@ -131,7 +162,15 @@ bool store(int id, void* data, int array_length) {
 	return true;
 }
 
+bool store_array() {
+	return true;
+}
+
 void* load(int id) {
+	if (check_if_current_id_was_deleted(id)) {
+		cerr << "Current data was deleted and no longer exists!";
+		return 0;
+	}
 	FILE * data_file;
 	int current_data_size = indexes[id].data_size;
 	void* return_data = new void*[current_data_size];
