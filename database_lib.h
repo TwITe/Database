@@ -101,7 +101,7 @@ void is_data_size_invalid(int current_data_size) {
 	}
 }
 
-void write_data(void* data, FILE * data_file, int last_written_byte_position, int bytes_number_to_write, const string& current_file, int id) {
+void write_data_to_file(void* data, FILE * data_file, int last_written_byte_position, int bytes_number_to_write, const string& current_file, int id) {
 	long int start_position = ftell(data_file);
 	fwrite(((void*)((char*)data + last_written_byte_position)), 1, bytes_number_to_write, data_file);
 	long int end_position = ftell(data_file);
@@ -113,7 +113,7 @@ void delete_data(int id) {
 	indexes[id].deleted = true;
 }
 
-bool store_data(int id, void* data, int current_data_size) {
+bool write_data(int id, void* data, int current_data_size) {
 	FILE * data_file = NULL;
 	string current_file;
 	int last_written_byte_position = 0;
@@ -130,12 +130,12 @@ bool store_data(int id, void* data, int current_data_size) {
 		int bytes_number_to_write;
 		if (current_data_size > file_free_space) {
 			bytes_number_to_write = file_free_space;
-			write_data(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, id);
+			write_data_to_file(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, id);
 			last_written_byte_position += bytes_number_to_write;
 		}
 		else {
 			bytes_number_to_write = current_data_size;
-			write_data(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, id);
+			write_data_to_file(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, id);
 		}
 		current_data_size -= bytes_number_to_write;
 		is_data_size_invalid(current_data_size);
@@ -151,7 +151,7 @@ bool storage(int id, void* data, int array_length) {
 	}
 	unsigned int current_data_size = array_length * 4;
 	save_current_data_size(id, current_data_size);
-	store_data(id, data, current_data_size);
+	write_data(id, data, current_data_size);
 	indexes[id].deleted = false;
 	return true;
 }
@@ -162,7 +162,7 @@ bool store(int id, void* data, int array_length) {
 	return true;
 }
 
-bool store_array() {
+bool store_array_helper() {
 	return true;
 }
 
