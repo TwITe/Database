@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <vector>
 #include <set>
-#include <array>
+#include <cstring>
 using namespace std;
 
 struct index {
@@ -183,7 +183,7 @@ void* load(int id) {
 		void* current_read_data = new void*[reading_bytes_number];
 		fseek(data_file, start_reading_position, 0);
 		fread(current_read_data, 1, reading_bytes_number, data_file);
-		memcpy((void*)((char*)return_data + (reading_bytes_number*i)), current_read_data, reading_bytes_number);
+        memcpy((void*)((char*)return_data + (reading_bytes_number*i)), current_read_data, reading_bytes_number);
 		delete[] current_read_data;
 		fclose(data_file);
 	}

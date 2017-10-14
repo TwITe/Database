@@ -1,16 +1,16 @@
 #define CATCH_CONFIG_MAIN
-#include "/Users/TwITe/Documents/Visual Studio 2017/Projects/Database/database_lib.h"
-#include "/Users/TwITe/Documents/Visual Studio 2017/Projects/catch.hpp"
+#include "/home/twite/CLionProjects/Database/database_lib.h"
+#include "/home/twite/CLionProjects/Database/catch.hpp"
 
 TEST_CASE("Data was succesfully writed to files", "[data_store]") {
-	set_path("C:/Users/TwITe/Documents/Visual Studio 2017/Projects/Database/Data_files/");
+	set_path("/home/twite/CLionProjects/Database/Data_files/");
 	set_data_file_size(5);
-	int arr[5]{ 0, 1, 2, 3, 4 };
+	int arr[5]{ 0, 1, 2, 3  , 4 };
 	REQUIRE(write_data(1, arr, 20) == true);
 }
 
 TEST_CASE("Data was succesfully deleted", "[data_delete]") {
-	set_path("C:/Users/TwITe/Documents/Visual Studio 2017/Projects/Database/Data_files/");
+	set_path("/home/twite/CLionProjects/Database/Data_files/");
 	set_data_file_size(5);
 	int arr[5]{ 0, 1, 2, 3, 4 };
 	int id = 1;
