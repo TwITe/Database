@@ -12,8 +12,8 @@ using namespace std;
 
 struct index_data {
 	vector <string> file_names;
-	vector <long int> start_reading_positions;
-	vector <long int> end_reading_positions;
+	vector <int> start_reading_positions;
+	vector <int> end_reading_positions;
 	int data_size;
 	bool deleted;
 };
@@ -163,8 +163,8 @@ void* load(int id) {
 	void* return_data = malloc(current_data_size);
 	for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
 		const char* current_filename = indexes[id].file_names[i].c_str();
-		long int start_reading_position = indexes[id].start_reading_positions[i];
-		long int end_reading_position = indexes[id].end_reading_positions[i];
+		int start_reading_position = indexes[id].start_reading_positions[i];
+		int end_reading_position = indexes[id].end_reading_positions[i];
 		int reading_bytes_number = end_reading_position - start_reading_position;
 		data_file = fopen(current_filename, "a+b");
 		void* current_read_data = malloc(reading_bytes_number);
