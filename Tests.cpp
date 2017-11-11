@@ -15,17 +15,13 @@ TEST_CASE("Check settings", "[general]") {
 }
 
 TEST_CASE("Data was succesfully writed to files", "[data_store]") {
-    //set_path("/home/twite/CLionProjects/Database/Data_files/");
-    //set_data_file_size(500);
     preset_settings();
-    int arr[5]{ 0, 1, 2, 3, 4 };
+    int arr[5]{0, 1, 2, 3, 4};
     id++;
     REQUIRE(write_data(id, arr, 20));
 }
 
 TEST_CASE("Created datafiles exists", "[data_store]") {
-    //set_path("/home/twite/CLionProjects/Database/Data_files/");
-   // set_data_file_size(500);
     preset_settings();
     int arr[5]{ 0, 1, 2, 3, 4 };
     id++;
@@ -38,8 +34,6 @@ TEST_CASE("Created datafiles exists", "[data_store]") {
 }
 
 TEST_CASE("Data was succesfully deleted", "[data_delete]") {
-    //set_path("/home/twite/CLionProjects/Database/Data_files/");
-    //set_data_file_size(500);
     preset_settings();
     int arr[5]{ 0, 1, 2, 3, 4 };
     id++;
@@ -49,8 +43,6 @@ TEST_CASE("Data was succesfully deleted", "[data_delete]") {
 }
 
 TEST_CASE("Able to load existing data") {
-    //set_path("/home/twite/CLionProjects/Database/Data_files/");
-    //set_data_file_size(500);
     preset_settings();
     const int array_length = 5;
     int arr[array_length]{0, 1, 2, 3, 4};
