@@ -1,7 +1,6 @@
 //It's database library
 //Call function "set_data_filesize" to set the default size of the data file
 //Call function "set_path" to set the path for saving data files
-//Call function "set_map_size" to set a size of the map that can be stored in memory before writing to file
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -36,10 +35,6 @@ void check_settings() {
 
 void set_data_file_size(unsigned int user_data_size) {
     data_file_size = user_data_size;
-}
-
-void set_map_size(unsigned int user_map_size) {
-	map_allocated_memory_size = user_map_size;
 }
 
 void set_path(const string &saving_path) {
@@ -96,7 +91,7 @@ void is_data_size_invalid(int current_data_size) {
     }
 }
 
-void write_data_to_file(void* data, FILE * data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file, int id) {
+void write_data_to_file(void* data, FILE* data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file, int id) {
     long long start_position = ftell(data_file);
     fwrite(((void *) ((char *) data + last_written_byte_position)), 1, bytes_number_to_write, data_file);
     long long end_position = ftell(data_file);
@@ -109,16 +104,18 @@ void delete_data(int id) {
 }
 
 bool write_data(int id, void* data, int current_data_size) {
-    FILE *data_file;
+    FILE* data_file;
     string current_file;
     int last_written_byte_position = 0;
     while (current_data_size != 0) {
         current_file = get_new_file_path();
         data_file = fopen(current_file.c_str(), "a+b");
         int file_free_space = get_file_free_space(current_file);
-        if (file_free_space == 0) {
+        fseek (data_file, data_file_size - file_free_space, SEEK_SET);
+        while (file_free_space == 0) {
             current_file = get_new_file_path();
             data_file = fopen(current_file.c_str(), "a+b");
+            file_free_space = get_file_free_space(current_file);
         }
         size_t bytes_number_to_write;
         if (current_data_size > file_free_space) {
@@ -137,24 +134,58 @@ bool write_data(int id, void* data, int current_data_size) {
     return true;
 }
 
-bool storage(int id, void* data, int array_length) {
+bool storage(int id, void* data, int data_size) {
     if (check_if_current_id_is_already_exists(id)) {
         delete_data(id);
     }
-    int current_data_size = array_length * 4;
-    save_current_data_size(id, current_data_size);
-    write_data(id, data, current_data_size);
+    write_data(id, data, data_size);
     indexes[id].deleted = false;
     return true;
 }
 
-bool store(int id, void* data, int array_length) {
+bool store(int id, void* data, int data_size) {
 	check_settings();
-	storage(id, data, array_length);
+    save_current_data_size(id, data_size);
+	storage(id, data, data_size);
 	return true;
 }
 
-bool store_array_helper() {
+bool store_helper(int id, int data) {
+    int data_size = sizeof(int);
+    store(id, &data, data_size);
+    return true;
+}
+
+bool store_helper(int id, double data) {
+    int data_size = sizeof(double);
+    store(id, &data, data_size);
+    return true;
+}
+
+bool store_helper(int id, std::string &data) {
+    int data_size = data.size();
+    store(id, &data, data_size);
+    return true;
+}
+
+bool store_helper(int id, std::vector<int> &data) {
+    int data_size = sizeof(int) * data.size();
+    store(id, &data, data_size);
+    return true;
+}
+
+bool store_helper(int id, std::vector<double> &data) {
+    int data_size = sizeof(double) & data.size();
+    store(id, &data, data_size);
+    return true;
+}
+
+bool store_helper(int id, std::vector<std::string> &data) {
+    int data_size = 0;
+    for (const auto &str: data) {
+        data_size += str.size();
+    }
+    store(id, &data, data_size);
     return true;
 }
 
@@ -164,7 +195,7 @@ void* load(int id) {
         return nullptr;
     }
     FILE *data_file;
-    size_t current_data_size = static_cast<size_t>(indexes[id].data_size);
+    size_t current_data_size = indexes[id].data_size;
     void *return_data = malloc(current_data_size);
     for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
         const char *current_filename = indexes[id].file_names[i].c_str();
@@ -181,3 +212,4 @@ void* load(int id) {
     }
     return return_data;
 }
+

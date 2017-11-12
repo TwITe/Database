@@ -6,7 +6,7 @@ int id = -1;
 
 void preset_settings() {
     set_path("/home/twite/CLionProjects/Database/Data_files/");
-    set_data_file_size(5);
+    set_data_file_size(20);
 }
 
 TEST_CASE("Check settings", "[general]") {
@@ -18,7 +18,27 @@ TEST_CASE("Data was succesfully writed to files", "[data_store]") {
     preset_settings();
     int arr[5]{0, 1, 2, 3, 4};
     id++;
-    REQUIRE(write_data(id, arr, 20));
+    REQUIRE(write_data(id, arr, sizeof(int) * 5));
+}
+
+TEST_CASE("Able to write data of type <int>", "[data_store]") {
+    preset_settings();
+    int data = 10;
+    id++;
+    store_helper(id, data);
+    void* returned_data = load(id);
+    int* casted_data = static_cast<int*>(returned_data);
+    REQUIRE(data == *casted_data);
+}
+
+TEST_CASE("Able to write data of type <double>", "[data_store]") {
+    preset_settings();
+    double data = 10.105;
+    id++;
+    store_helper(id, data);
+    void* returned_data = load(id);
+    double* casted_data = static_cast<double*>(returned_data);
+    REQUIRE(data == *casted_data);
 }
 
 TEST_CASE("Created datafiles exists", "[data_store]") {
@@ -48,8 +68,8 @@ TEST_CASE("Able to load existing data") {
     int arr[array_length]{0, 1, 2, 3, 4};
     id++;
     write_data(id, arr, 20);
-    void *returned_data_num1 = load(id);
-    int *casted_data = static_cast<int *>(returned_data_num1);
+    void* returned_data_num1 = load(id);
+    int* casted_data = static_cast<int*>(returned_data_num1);
     for (int i = 0; i < 5; i++) {
         arr[i] = casted_data[i];
     }
