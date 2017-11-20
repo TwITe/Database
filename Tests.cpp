@@ -41,6 +41,17 @@ TEST_CASE("Able to write data of type <double>", "[data_store]") {
     REQUIRE(data == *casted_data);
 }
 
+TEST_CASE("Able to write data of type <string>", "[data_store]") {
+    preset_settings();
+    string data = "database";
+    id++;
+    store_helper(id, data);
+    void* returned_data = load(id);
+    string* casted_data = static_cast<string*>(returned_data);
+    string s = *casted_data;
+    REQUIRE(data == s);
+}
+
 TEST_CASE("Created datafiles exists", "[data_store]") {
     preset_settings();
     int arr[5]{ 0, 1, 2, 3, 4 };

@@ -13,14 +13,13 @@ struct index_data {
 	vector <string> file_names;
 	vector <long long> start_reading_positions;
 	vector <long long> end_reading_positions;
-	int data_size;
-	bool deleted;
+	int data_size = 1;
+	bool deleted = false;
 };
 
 string user_path;
 int data_file_number = -1;
 unsigned int data_file_size = 8388608;
-unsigned int map_allocated_memory_size;
 unordered_map <int,index_data> indexes;
 
 void check_path() {
@@ -48,13 +47,10 @@ string get_new_file_path() {
 	return path;
 }
 
-bool save_map_to_file() {
-
-    return true;
-}
-
-bool save_current_data_size(int id, int current_data_size){
-	indexes[id].data_size = current_data_size;
+bool save_current_data_size(int id, int current_data_size) {
+    index_data obj;
+    obj.data_size = current_data_size;
+	indexes[id] = obj;
 	return true;
 }
 
@@ -134,53 +130,52 @@ bool write_data(int id, void* data, int current_data_size) {
     return true;
 }
 
-bool storage(int id, void* data, int data_size) {
+bool store(int id, void* data, int data_size) {
     if (check_if_current_id_is_already_exists(id)) {
         delete_data(id);
     }
-    write_data(id, data, data_size);
+    save_current_data_size(id, data_size);
     indexes[id].deleted = false;
     return true;
 }
 
-bool store(int id, void* data, int data_size) {
-	check_settings();
-    save_current_data_size(id, data_size);
-	storage(id, data, data_size);
-	return true;
-}
-
 bool store_helper(int id, int data) {
+    check_settings();
     int data_size = sizeof(int);
     store(id, &data, data_size);
+    write_data(id, &data, data_size);
     return true;
 }
 
 bool store_helper(int id, double data) {
+    check_settings();
     int data_size = sizeof(double);
     store(id, &data, data_size);
+    write_data(id, &data, data_size);
     return true;
 }
 
-bool store_helper(int id, std::string &data) {
-    int data_size = data.size();
+bool store_helper(int id, string &data) {
+    check_settings();
+    int data_size = data.size() * sizeof(char);
     store(id, &data, data_size);
+    write_data(id, static_cast<void*>(&data), data_size);
     return true;
 }
 
-bool store_helper(int id, std::vector<int> &data) {
+bool store_helper(int id, vector <int> &data) {
     int data_size = sizeof(int) * data.size();
     store(id, &data, data_size);
     return true;
 }
 
-bool store_helper(int id, std::vector<double> &data) {
+bool store_helper(int id, vector <double> &data) {
     int data_size = sizeof(double) & data.size();
     store(id, &data, data_size);
     return true;
 }
 
-bool store_helper(int id, std::vector<std::string> &data) {
+bool store_helper(int id, vector <string> &data) {
     int data_size = 0;
     for (const auto &str: data) {
         data_size += str.size();
@@ -195,21 +190,20 @@ void* load(int id) {
         return nullptr;
     }
     FILE *data_file;
-    size_t current_data_size = indexes[id].data_size;
-    void *return_data = malloc(current_data_size);
+    int current_data_size = indexes[id].data_size;
+    char *return_data = new char(current_data_size);
     for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
         const char *current_filename = indexes[id].file_names[i].c_str();
         int start_reading_position = indexes[id].start_reading_positions[i];
         int end_reading_position = indexes[id].end_reading_positions[i];
         int reading_bytes_number = end_reading_position - start_reading_position;
         data_file = fopen(current_filename, "a+b");
-        void *current_read_data = malloc(reading_bytes_number);
+        char *current_read_data = new char(reading_bytes_number);
         fseek(data_file, start_reading_position, 0);
         fread(current_read_data, 1, reading_bytes_number, data_file);
         memcpy((void *) ((char *) return_data + (reading_bytes_number * i)), current_read_data, reading_bytes_number);
-        free(current_read_data);
+        delete(current_read_data);
         fclose(data_file);
     }
     return return_data;
 }
-
