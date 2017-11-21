@@ -158,8 +158,11 @@ bool store_helper(int id, double data) {
 bool store_helper(int id, string &data) {
     check_settings();
     int data_size = data.size() * sizeof(char);
-    store(id, &data, data_size);
-    write_data(id, static_cast<void*>(&data), data_size);
+    char cstr1[data_size];
+    strcpy(cstr1, &data[0]);
+    //char *cstr = &data[0];
+    store(id, cstr1, data_size);
+    write_data(id, cstr1, data_size);
     return true;
 }
 
@@ -191,18 +194,18 @@ void* load(int id) {
     }
     FILE *data_file;
     int current_data_size = indexes[id].data_size;
-    char *return_data = new char(current_data_size);
+    void *return_data = malloc(current_data_size);
     for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
         const char *current_filename = indexes[id].file_names[i].c_str();
         int start_reading_position = indexes[id].start_reading_positions[i];
         int end_reading_position = indexes[id].end_reading_positions[i];
         int reading_bytes_number = end_reading_position - start_reading_position;
         data_file = fopen(current_filename, "a+b");
-        char *current_read_data = new char(reading_bytes_number);
+        void* current_read_data = malloc(reading_bytes_number);
         fseek(data_file, start_reading_position, 0);
         fread(current_read_data, 1, reading_bytes_number, data_file);
         memcpy((void *) ((char *) return_data + (reading_bytes_number * i)), current_read_data, reading_bytes_number);
-        delete(current_read_data);
+        free(current_read_data);
         fclose(data_file);
     }
     return return_data;

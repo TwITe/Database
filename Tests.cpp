@@ -47,8 +47,11 @@ TEST_CASE("Able to write data of type <string>", "[data_store]") {
     id++;
     store_helper(id, data);
     void* returned_data = load(id);
-    string* casted_data = static_cast<string*>(returned_data);
-    string s = *casted_data;
+    char* returned_string = (char*) returned_data;
+    string s;
+    for (unsigned int i = 0; i < data.size() * sizeof(char); i++) {
+        s.push_back(*(returned_string + i));
+    }
     REQUIRE(data == s);
 }
 
