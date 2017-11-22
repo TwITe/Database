@@ -5,9 +5,14 @@ using namespace std;
 int id = -1;
 
 void preset_settings() {
+<<<<<<< HEAD
 	//set_path("/home/twite/CLionProjects/Database/data_files/");
 	set_path("c:\\users\\twite\\documents\\visual studio 2017\\projects\\sdatabase\\data_files\\");
 	set_data_file_size(20);
+=======
+    set_path("/home/twite/CLionProjects/Database/data_files/");
+    set_data_file_size(20);
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
 }
 
 TEST_CASE("Check settings", "[general]") {
@@ -31,7 +36,10 @@ TEST_CASE("Able to write data of type <int>", "[data_store]") {
     REQUIRE(data == *returned_data);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
 TEST_CASE("Able to write data of type <double>", "[data_store]") {
     preset_settings();
     double data = 10.105;
@@ -45,8 +53,12 @@ TEST_CASE("Able to write data of type <string>", "[data_store]") {
     preset_settings();
     string data = "database is working perfectly y f s";
     id++;
+<<<<<<< HEAD
 	const int data_size = data.size() * sizeof(char);
     store_helper(id, data, data_size);
+=======
+    store_helper(id, data);
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
     char* returned_data = static_cast<char*>(get_writed_data(id));
     string converted_string;
     for (unsigned int i = 0; i < data.size() * sizeof(char); i++) {

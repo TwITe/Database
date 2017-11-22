@@ -7,7 +7,10 @@
 #include <unordered_map>
 #include <vector>
 #include <cstring>
+<<<<<<< HEAD
 #include <stdlib.h>
+=======
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
 using namespace std;
 
 struct index_data {
@@ -87,11 +90,17 @@ void is_data_size_invalid(size_t current_data_size) {
     }
 }
 
+<<<<<<< HEAD
 void write_data_to_file(void* data, FILE* data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file,  streamoff cur_pos_in_the_file, int id) {
     long long start_position = cur_pos_in_the_file;
 	data = ((static_cast<char*>(data))) + last_written_byte_position;
 	char* returned_data = static_cast<char*>(data);
     fwrite(data, 1, bytes_number_to_write, data_file);
+=======
+void write_data_to_file(void* &data, FILE* &data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file,  streamoff cur_pos_in_the_file, int id) {
+    long long start_position = cur_pos_in_the_file;
+    fwrite(static_cast<void*>(static_cast<char*>(data + last_written_byte_position)), 1, bytes_number_to_write, data_file);
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
     long long end_position = ftell(data_file);
     save_file_name_and_reading_positions(id, current_file, start_position, end_position);
 }
@@ -103,7 +112,10 @@ void delete_data(int id) {
 
 bool write_data(int id, void* data, size_t current_data_size) {
     FILE* data_file;
+<<<<<<< HEAD
 	char* returned_data = static_cast<char*>(data);
+=======
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
     string current_file;
     int last_written_byte_position = 0;
     while (current_data_size != 0) {
@@ -159,6 +171,7 @@ bool store_helper(int id, double data) {
     return true;
 }
 
+<<<<<<< HEAD
 bool store_helper(int id, const string &data, const int data_size) {
     check_settings();
     string s = &data[0];
@@ -167,30 +180,54 @@ bool store_helper(int id, const string &data, const int data_size) {
     store(id, data_size);
     write_data(id, casted_string, data_size);
 	delete[] casted_string;
+=======
+bool store_helper(int id, const string &data) {
+    check_settings();
+    string s = &data[0];
+    size_t data_size = s.size() * sizeof(char);
+    char casted_string[data_size];
+    strcpy(casted_string, &data[0]);
+    store(id, data_size);
+    write_data(id, casted_string, data_size);
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
     return true;
 }
 
 bool store_helper(int id, const vector <int> &data) {
     size_t data_size = sizeof(int) * data.size();
     store(id, data_size);
+<<<<<<< HEAD
     int* casted_vector = new int[data.size()];
+=======
+    int casted_vector[data.size()];
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
     for (int i = 0; i < data.size(); i++) {
         casted_vector[i] = data[i];
     }
     write_data(id, casted_vector, data_size);
+<<<<<<< HEAD
 	delete[] casted_vector;
+=======
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
     return true;
 }
 
 bool store_helper(int id, const vector <double> &data) {
     size_t data_size = sizeof(double) * data.size();
     store(id, data_size);
+<<<<<<< HEAD
     double* casted_vector = new double[data.size()];
+=======
+    double casted_vector[data.size()];
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
     for (int i = 0; i < data.size(); i++) {
         casted_vector[i] = data[i];
     }
     write_data(id, casted_vector, data_size);
+<<<<<<< HEAD
 	delete[] casted_vector;
+=======
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
     return true;
 }
 
@@ -200,7 +237,11 @@ bool store_helper(int id, const vector <string> &data) {
         data_size += str.size();
     }
     store(id, data_size);
+<<<<<<< HEAD
     char* casted_vector = new char[data_size];
+=======
+    char casted_vector[data_size];
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
     int j = 0;
     for (int i = 0; i < data.size(); i++) {
         for (auto ch: data[i]) {
@@ -209,7 +250,10 @@ bool store_helper(int id, const vector <string> &data) {
         }
     }
     write_data(id, casted_vector, data_size);
+<<<<<<< HEAD
 	delete[] casted_vector;
+=======
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
     return true;
 }
 
@@ -220,6 +264,10 @@ void* load(int id) {
     }
     FILE* data_file;
     size_t current_data_size = indexes[id].data_size;
+<<<<<<< HEAD
+=======
+    //char buf[current_data_size];
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
     void* return_data = malloc(current_data_size);
     int last_written_byte_position_in_main_buffer = 0;
     for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
@@ -231,8 +279,14 @@ void* load(int id) {
         void* current_read_data = malloc(reading_bytes_number);
         fseek(data_file, start_reading_position, 0);
         fread(current_read_data, 1, reading_bytes_number, data_file);
+<<<<<<< HEAD
         memcpy(static_cast<char*>(return_data) + last_written_byte_position_in_main_buffer, current_read_data, reading_bytes_number);
         last_written_byte_position_in_main_buffer += reading_bytes_number;
+=======
+        memcpy(static_cast<void*>(static_cast<char*>(return_data + last_written_byte_position_in_main_buffer)), current_read_data, reading_bytes_number);
+        last_written_byte_position_in_main_buffer += reading_bytes_number;
+        free(current_read_data);
+>>>>>>> 4c4dc35a1b8329a1b1946588ad829a17f477d008
         fclose(data_file);
     }
     return return_data;
