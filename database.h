@@ -166,6 +166,7 @@ bool store_helper(int id, const string &data, const int data_size) {
     strcpy(casted_string, &data[0]);
     store(id, data_size);
     write_data(id, casted_string, data_size);
+	delete[] casted_string;
     return true;
 }
 
@@ -219,10 +220,8 @@ void* load(int id) {
     }
     FILE* data_file;
     size_t current_data_size = indexes[id].data_size;
-    //char buf[current_data_size];
     void* return_data = malloc(current_data_size);
     int last_written_byte_position_in_main_buffer = 0;
-	char* main_buf = static_cast<char*>(return_data);
     for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
         const char* current_filename = indexes[id].file_names[i].c_str();
         long long start_reading_position = indexes[id].start_reading_positions[i];
@@ -232,12 +231,8 @@ void* load(int id) {
         void* current_read_data = malloc(reading_bytes_number);
         fseek(data_file, start_reading_position, 0);
         fread(current_read_data, 1, reading_bytes_number, data_file);
-		char* read_buf = static_cast<char*>(current_read_data);
         memcpy(static_cast<char*>(return_data) + last_written_byte_position_in_main_buffer, current_read_data, reading_bytes_number);
-		//char* main_buf = static_cast<char*>(return_data);
         last_written_byte_position_in_main_buffer += reading_bytes_number;
-		//return_data = static_cast<char*>(return_data) + last_written_byte_position_in_main_buffer;
-        //free(current_read_data);
         fclose(data_file);
     }
     return return_data;

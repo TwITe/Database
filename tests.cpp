@@ -15,32 +15,31 @@ TEST_CASE("Check settings", "[general]") {
     REQUIRE_THROWS(check_settings());
 }
 
-//TEST_CASE("Data was succesfully writed to files", "[data_store]") {
-//    preset_settings();
-//    int arr[5]{0, 1, 2, 3, 4};
-//    id++;
-//    REQUIRE(write_data(id, arr, sizeof(int) * 5));
-//}
+TEST_CASE("Data was succesfully writed to files", "[data_store]") {
+    preset_settings();
+    int arr[5]{0, 1, 2, 3, 4};
+    id++;
+    REQUIRE(write_data(id, arr, sizeof(int) * 5));
+}
 
-//TEST_CASE("Able to write data of type <int>", "[data_store]") {
-//    preset_settings();
-//    int data = 10;
-//    id++;
-//    store_helper(id, data);
-//    int* returned_data = static_cast<int*>(get_writed_data(id));
-//    REQUIRE(data == *returned_data);
-//}
-//
-//
-//TEST_CASE("Able to write data of type <double>", "[data_store]") {
-//    preset_settings();
-//    double data = 10.105;
-//    id++;
-//    store_helper(id, data);
-//    double* returned_data = static_cast<double*>(get_writed_data(id));
-//    REQUIRE(data == *returned_data);
-//}
+TEST_CASE("Able to write data of type <int>", "[data_store]") {
+    preset_settings();
+    int data = 10;
+    id++;
+    store_helper(id, data);
+    int* returned_data = static_cast<int*>(get_writed_data(id));
+    REQUIRE(data == *returned_data);
+}
 
+
+TEST_CASE("Able to write data of type <double>", "[data_store]") {
+    preset_settings();
+    double data = 10.105;
+    id++;
+    store_helper(id, data);
+    double* returned_data = static_cast<double*>(get_writed_data(id));
+    REQUIRE(data == *returned_data);
+}
 
 TEST_CASE("Able to write data of type <string>", "[data_store]") {
     preset_settings();
