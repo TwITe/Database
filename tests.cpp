@@ -43,11 +43,11 @@ TEST_CASE("Able to write data of type <double>", "[data_store]") {
 
 TEST_CASE("Able to write data of type <string>", "[data_store]") {
     preset_settings();
-    string data = "database";
+    string data = "database is working perfectly y f s";
     id++;
     store_helper(id, data);
     void* returned_data = load(id);
-    char* returned_string = (char*) returned_data;
+    char* returned_string = static_cast<char*>(returned_data);
     string s;
     for (unsigned int i = 0; i < data.size() * sizeof(char); i++) {
         s.push_back(*(returned_string + i));
