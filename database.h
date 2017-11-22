@@ -61,7 +61,7 @@ bool save_file_name_and_reading_positions(int id, const string& current_filename
 	return true;
 }
 
-int get_file_free_space(const string& current_file_name) {
+size_t get_file_free_space(const string& current_file_name) {
     ifstream current_file(current_file_name, ifstream::binary);
     current_file.seekg(0, current_file.end);
     if (static_cast<int>(current_file.tellg()) == 0) {
@@ -80,13 +80,13 @@ bool check_if_current_id_is_already_exists(int id) {
     return indexes.count(id) == 1;
 }
 
-void is_data_size_invalid(int current_data_size) {
+void is_data_size_invalid(size_t current_data_size) {
     if (current_data_size < 0) {
         cerr << "The data size is invalid, please check it";
     }
 }
 
-void write_data_to_file(void* &data, FILE* &data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file,  int cur_pos_in_the_file, int id) {
+void write_data_to_file(void* &data, FILE* &data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file,  streamoff cur_pos_in_the_file, int id) {
     long long start_position = cur_pos_in_the_file;
     fwrite(static_cast<void*>(static_cast<char*>(data + last_written_byte_position)), 1, bytes_number_to_write, data_file);
     long long end_position = ftell(data_file);
@@ -98,29 +98,29 @@ void delete_data(int id) {
     indexes[id].deleted = true;
 }
 
-bool write_data(int id, void* data, int current_data_size) {
+bool write_data(int id, void* data, size_t current_data_size) {
     FILE* data_file;
     string current_file;
     int last_written_byte_position = 0;
     while (current_data_size != 0) {
         current_file = get_new_file_path();
         data_file = fopen(current_file.c_str(), "a+b");
-        int file_free_space = get_file_free_space(current_file);
+        size_t file_free_space = get_file_free_space(current_file);
         fseek (data_file, data_file_size - file_free_space, SEEK_SET);
         while (file_free_space == 0) {
             current_file = get_new_file_path();
             data_file = fopen(current_file.c_str(), "a+b");
             file_free_space = get_file_free_space(current_file);
         }
-        int cur_pos_in_the_file = data_file_size - file_free_space;
+        streamoff cur_pos_in_the_file = data_file_size - file_free_space;
         size_t bytes_number_to_write;
         if (current_data_size > file_free_space) {
-            bytes_number_to_write = static_cast<size_t>(file_free_space);
+            bytes_number_to_write = file_free_space;
             write_data_to_file(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, cur_pos_in_the_file, id);
             last_written_byte_position += bytes_number_to_write;
         }
         else {
-            bytes_number_to_write = static_cast<size_t>(current_data_size);
+            bytes_number_to_write = current_data_size;
             write_data_to_file(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, cur_pos_in_the_file, id);
         }
         current_data_size -= bytes_number_to_write;
@@ -141,7 +141,7 @@ bool store(int id, size_t data_size) {
 
 bool store_helper(int id, int data) {
     check_settings();
-    int data_size = sizeof(int);
+    size_t data_size = sizeof(int);
     store(id, data_size);
     write_data(id, &data, data_size);
     return true;
@@ -149,41 +149,60 @@ bool store_helper(int id, int data) {
 
 bool store_helper(int id, double data) {
     check_settings();
-    int data_size = sizeof(double);
+    size_t data_size = sizeof(double);
     store(id, data_size);
     write_data(id, &data, data_size);
     return true;
 }
 
-bool store_helper(int id, string &data) {
+bool store_helper(int id, const string &data) {
     check_settings();
     string s = &data[0];
     size_t data_size = s.size() * sizeof(char);
-    char cstr1[data_size];
-    strcpy(cstr1, &data[0]);
+    char casted_string[data_size];
+    strcpy(casted_string, &data[0]);
     store(id, data_size);
-    write_data(id, cstr1, data_size);
+    write_data(id, casted_string, data_size);
     return true;
 }
 
-bool store_helper(int id, vector <int> &data) {
+bool store_helper(int id, const vector <int> &data) {
     size_t data_size = sizeof(int) * data.size();
     store(id, data_size);
+    int casted_vector[data.size()];
+    for (int i = 0; i < data.size(); i++) {
+        casted_vector[i] = data[i];
+    }
+    write_data(id, casted_vector, data_size);
     return true;
 }
 
-bool store_helper(int id, vector <double> &data) {
-    size_t data_size = sizeof(double) & data.size();
+bool store_helper(int id, const vector <double> &data) {
+    size_t data_size = sizeof(double) * data.size();
     store(id, data_size);
+    double casted_vector[data.size()];
+    for (int i = 0; i < data.size(); i++) {
+        casted_vector[i] = data[i];
+    }
+    write_data(id, casted_vector, data_size);
     return true;
 }
 
-bool store_helper(int id, vector <string> &data) {
+bool store_helper(int id, const vector <string> &data) {
     size_t data_size = 0;
     for (const auto &str: data) {
         data_size += str.size();
     }
     store(id, data_size);
+    char casted_vector[data_size];
+    int j = 0;
+    for (int i = 0; i < data.size(); i++) {
+        for (auto ch: data[i]) {
+            casted_vector[j]= ch;
+            j++;
+        }
+    }
+    write_data(id, casted_vector, data_size);
     return true;
 }
 
@@ -212,4 +231,9 @@ void* load(int id) {
         fclose(data_file);
     }
     return return_data;
+}
+
+void* get_writed_data(int id) {
+    void *data = load(id);
+    return data;
 }
