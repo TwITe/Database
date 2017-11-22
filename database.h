@@ -165,6 +165,7 @@ bool store_helper(int id, const string &data) {
     store(id, data_size);
     write_data(id, casted_string, data_size);
     delete[] casted_string;
+    return true;
 }
 
 bool store_helper(int id, const vector <int> &data) {
