@@ -5,7 +5,7 @@ using namespace std;
 int id = -1;
 
 void preset_settings() {
-    set_path("/home/twite/CLionProjects/Database/Data_files/");
+    set_path("/home/twite/CLionProjects/Database/data_files/");
     set_data_file_size(20);
 }
 
