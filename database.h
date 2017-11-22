@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <vector>
 #include <cstring>
+#include <stdlib.h>
 using namespace std;
 
 struct index_data {
@@ -86,9 +87,10 @@ void is_data_size_invalid(size_t current_data_size) {
     }
 }
 
-void write_data_to_file(void* &data, FILE* &data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file,  streamoff cur_pos_in_the_file, int id) {
+void write_data_to_file(void* data, FILE* data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file,  streamoff cur_pos_in_the_file, int id) {
     long long start_position = cur_pos_in_the_file;
-    fwrite(static_cast<void*>(static_cast<char*>(data + last_written_byte_position)), 1, bytes_number_to_write, data_file);
+	data = ((static_cast<char*>(data))) + last_written_byte_position;
+    fwrite(data, 1, bytes_number_to_write, data_file);
     long long end_position = ftell(data_file);
     save_file_name_and_reading_positions(id, current_file, start_position, end_position);
 }
@@ -157,19 +159,18 @@ bool store_helper(int id, double data) {
 
 bool store_helper(int id, const string &data) {
     check_settings();
-    string s = &data[0];
-    size_t data_size = s.size() * sizeof(char);
-    char casted_string[data_size];
+    int data_size = data.size();
+    char* casted_string = new char[data_size];
     strcpy(casted_string, &data[0]);
     store(id, data_size);
     write_data(id, casted_string, data_size);
-    return true;
+    delete[] casted_string;
 }
 
 bool store_helper(int id, const vector <int> &data) {
     size_t data_size = sizeof(int) * data.size();
     store(id, data_size);
-    int casted_vector[data.size()];
+    int* casted_vector = new int[data.size()];
     for (int i = 0; i < data.size(); i++) {
         casted_vector[i] = data[i];
     }
@@ -180,11 +181,12 @@ bool store_helper(int id, const vector <int> &data) {
 bool store_helper(int id, const vector <double> &data) {
     size_t data_size = sizeof(double) * data.size();
     store(id, data_size);
-    double casted_vector[data.size()];
+    double* casted_vector = new double[data.size()];
     for (int i = 0; i < data.size(); i++) {
         casted_vector[i] = data[i];
     }
     write_data(id, casted_vector, data_size);
+	delete[] casted_vector;
     return true;
 }
 
@@ -194,7 +196,7 @@ bool store_helper(int id, const vector <string> &data) {
         data_size += str.size();
     }
     store(id, data_size);
-    char casted_vector[data_size];
+    char* casted_vector = new char[data_size];
     int j = 0;
     for (int i = 0; i < data.size(); i++) {
         for (auto ch: data[i]) {
@@ -215,7 +217,7 @@ void* load(int id) {
     size_t current_data_size = indexes[id].data_size;
     void* return_data = malloc(current_data_size);
     int last_written_byte_position_in_main_buffer = 0;
-    for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
+    for (unsigned int   i = 0; i < indexes[id].file_names.size(); i++) {
         const char* current_filename = indexes[id].file_names[i].c_str();
         long long start_reading_position = indexes[id].start_reading_positions[i];
         long long end_reading_position = indexes[id].end_reading_positions[i];
@@ -224,7 +226,7 @@ void* load(int id) {
         void* current_read_data = malloc(reading_bytes_number);
         fseek(data_file, start_reading_position, 0);
         fread(current_read_data, 1, reading_bytes_number, data_file);
-        memcpy(static_cast<void*>(static_cast<char*>(return_data + last_written_byte_position_in_main_buffer)), current_read_data, reading_bytes_number);
+        memcpy(static_cast<char*>(return_data) + last_written_byte_position_in_main_buffer, current_read_data, reading_bytes_number);
         last_written_byte_position_in_main_buffer += reading_bytes_number;
         free(current_read_data);
         fclose(data_file);

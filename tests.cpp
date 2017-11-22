@@ -5,8 +5,9 @@ using namespace std;
 int id = -1;
 
 void preset_settings() {
-    set_path("/home/twite/CLionProjects/Database/data_files/");
-    set_data_file_size(20);
+	//set_path("/home/twite/CLionProjects/Database/data_files/");
+	set_path("c:\\users\\twite\\documents\\visual studio 2017\\projects\\sdatabase\\data_files\\");
+	set_data_file_size(20);
 }
 
 TEST_CASE("Check settings", "[general]") {
