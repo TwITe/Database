@@ -6,7 +6,7 @@ int id = -1;
 
 void preset_settings() {
 	//set_path("/home/twite/CLionProjects/Database/data_files/");
-	set_path("c:\\users\\twite\\documents\\visual studio 2017\\projects\\sdatabase\\data_files\\");
+	set_path("c:\\users\\twite\\documents\\visual studio 2017\\projects\\database\\data_files\\");
 	set_data_file_size(20);
 }
 
@@ -62,7 +62,7 @@ TEST_CASE("Able to write vector of type <int>", "[data_store]") {
     store_helper(id, data);
     int* casted_data = static_cast<int*>(get_writed_data(id));
     vector <int> converted_int_type_vector;
-    for (int i = 0; i < data.size(); i++) {
+    for (unsigned int i = 0; i < data.size(); i++) {
         converted_int_type_vector.push_back(*(casted_data + i));
     }
     REQUIRE(data == converted_int_type_vector);
@@ -77,7 +77,7 @@ TEST_CASE("Able to write vector of type <double>", "[data_store]") {
     store_helper(id, data);
     double* casted_data = static_cast<double*>(get_writed_data(id));
     vector <double> converted_double_type_vector;
-    for (int i = 0; i < data.size(); i++) {
+    for (unsigned int i = 0; i < data.size(); i++) {
         converted_double_type_vector.push_back(*(casted_data + i));
     }
     REQUIRE(data == converted_double_type_vector);
@@ -94,8 +94,8 @@ TEST_CASE("Able to write vector of type <string>", "[data_store]") {
     char* casted_data = static_cast<char*>(get_writed_data(id));
     vector <string> converted_string_type_vector(data.size());
     int j = 0;
-    for (int i = 0; i < data.size(); i++) {
-        for (int ii = 0; ii < data[i].size(); ii++) {
+    for (unsigned int i = 0; i < data.size(); i++) {
+        for (unsigned int ii = 0; ii < data[i].size(); ii++) {
             converted_string_type_vector[i].push_back(*(casted_data + j));
             j++;
         }

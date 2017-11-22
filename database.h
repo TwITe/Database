@@ -12,8 +12,8 @@ using namespace std;
 
 struct index_data {
 	vector <string> file_names;
-	vector <long long> start_reading_positions;
-	vector <long long> end_reading_positions;
+	vector <long> start_reading_positions;
+	vector <long> end_reading_positions;
 	size_t data_size = 1;
 	bool deleted = false;
 };
@@ -55,7 +55,7 @@ bool save_current_data_size(int id, size_t current_data_size) {
 	return true;
 }
 
-bool save_file_name_and_reading_positions(int id, const string& current_filename, long long start_position, long long end_position) {
+bool save_file_name_and_reading_positions(int id, const string& current_filename, long start_position, long end_position) {
 	indexes[id].file_names.push_back(current_filename);
 	indexes[id].start_reading_positions.push_back(start_position);
 	indexes[id].end_reading_positions.push_back(end_position);
@@ -68,7 +68,7 @@ size_t get_file_free_space(const string& current_file_name) {
     if (static_cast<int>(current_file.tellg()) == 0) {
         return data_file_size;
     }
-    int current_data_file_size = current_file.tellg();
+    int current_data_file_size = static_cast<int>(current_file.tellg());
     current_file.close();
     return data_file_size - current_data_file_size;
 }
@@ -88,10 +88,10 @@ void is_data_size_invalid(size_t current_data_size) {
 }
 
 void write_data_to_file(void* data, FILE* data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file,  streamoff cur_pos_in_the_file, int id) {
-    long long start_position = cur_pos_in_the_file;
+    long start_position = cur_pos_in_the_file;
 	data = ((static_cast<char*>(data))) + last_written_byte_position;
     fwrite(data, 1, bytes_number_to_write, data_file);
-    long long end_position = ftell(data_file);
+    long end_position = ftell(data_file);
     save_file_name_and_reading_positions(id, current_file, start_position, end_position);
 }
 
@@ -106,28 +106,32 @@ bool write_data(int id, void* data, size_t current_data_size) {
     int last_written_byte_position = 0;
     while (current_data_size != 0) {
         current_file = get_new_file_path();
-        data_file = fopen(current_file.c_str(), "a+b");
-        size_t file_free_space = get_file_free_space(current_file);
-        fseek (data_file, data_file_size - file_free_space, SEEK_SET);
-        while (file_free_space == 0) {
-            current_file = get_new_file_path();
-            data_file = fopen(current_file.c_str(), "a+b");
-            file_free_space = get_file_free_space(current_file);
-        }
-        streamoff cur_pos_in_the_file = data_file_size - file_free_space;
-        size_t bytes_number_to_write;
-        if (current_data_size > file_free_space) {
-            bytes_number_to_write = file_free_space;
-            write_data_to_file(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, cur_pos_in_the_file, id);
-            last_written_byte_position += bytes_number_to_write;
-        }
-        else {
-            bytes_number_to_write = current_data_size;
-            write_data_to_file(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, cur_pos_in_the_file, id);
-        }
-        current_data_size -= bytes_number_to_write;
-        is_data_size_invalid(current_data_size);
-        fclose(data_file);
+		if (errno_t err = fopen_s(&data_file, current_file.c_str(), "a+b") != 0) {
+			cerr << "File could not be opened";
+		}
+		else {
+			size_t file_free_space = get_file_free_space(current_file);
+			fseek(data_file, data_file_size - file_free_space, SEEK_SET);
+			while (file_free_space == 0) {
+				current_file = get_new_file_path();
+				fopen_s(&data_file, current_file.c_str(), "a+b");
+				file_free_space = get_file_free_space(current_file);
+			}
+			streamoff cur_pos_in_the_file = data_file_size - file_free_space;
+			size_t bytes_number_to_write;
+			if (current_data_size > file_free_space) {
+				bytes_number_to_write = file_free_space;
+				write_data_to_file(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, cur_pos_in_the_file, id);
+				last_written_byte_position += bytes_number_to_write;
+			}
+			else {
+				bytes_number_to_write = current_data_size;
+				write_data_to_file(data, data_file, last_written_byte_position, bytes_number_to_write, current_file, cur_pos_in_the_file, id);
+			}
+			current_data_size -= bytes_number_to_write;
+			is_data_size_invalid(current_data_size);
+			fclose(data_file);
+		}
     }
     return true;
 }
@@ -159,9 +163,9 @@ bool store_helper(int id, double data) {
 
 bool store_helper(int id, const string &data) {
     check_settings();
-    int data_size = data.size();
-    char* casted_string = new char[data_size];
-    strcpy(casted_string, &data[0]);
+	int data_size = data.size();
+	char* casted_string = new char[data_size + 1];
+	strcpy_s(casted_string, data_size + 1, data.c_str());
     store(id, data_size);
     write_data(id, casted_string, data_size);
     delete[] casted_string;
@@ -171,8 +175,8 @@ bool store_helper(int id, const string &data) {
 bool store_helper(int id, const vector <int> &data) {
     size_t data_size = sizeof(int) * data.size();
     store(id, data_size);
-    int* casted_vector = new int[data.size()];
-    for (int i = 0; i < data.size(); i++) {
+    int* casted_vector = new int[data_size];
+    for (unsigned int i = 0; i < data.size(); i++) {
         casted_vector[i] = data[i];
     }
     write_data(id, casted_vector, data_size);
@@ -182,12 +186,12 @@ bool store_helper(int id, const vector <int> &data) {
 bool store_helper(int id, const vector <double> &data) {
     size_t data_size = sizeof(double) * data.size();
     store(id, data_size);
-    double* casted_vector = new double[data.size()];
-    for (int i = 0; i < data.size(); i++) {
+    double* casted_vector = new double[data_size];
+    for (unsigned int i = 0; i < data.size(); i++) {
         casted_vector[i] = data[i];
     }
     write_data(id, casted_vector, data_size);
-	delete[] casted_vector;
+	//delete[] casted_vector;
     return true;
 }
 
@@ -199,7 +203,7 @@ bool store_helper(int id, const vector <string> &data) {
     store(id, data_size);
     char* casted_vector = new char[data_size];
     int j = 0;
-    for (int i = 0; i < data.size(); i++) {
+    for (unsigned int i = 0; i < data.size(); i++) {
         for (auto ch: data[i]) {
             casted_vector[j]= ch;
             j++;
@@ -220,16 +224,16 @@ void* load(int id) {
     int last_written_byte_position_in_main_buffer = 0;
     for (unsigned int   i = 0; i < indexes[id].file_names.size(); i++) {
         const char* current_filename = indexes[id].file_names[i].c_str();
-        long long start_reading_position = indexes[id].start_reading_positions[i];
-        long long end_reading_position = indexes[id].end_reading_positions[i];
-        size_t reading_bytes_number = end_reading_position - start_reading_position;
-        data_file = fopen(current_filename, "a+b");
+        long start_reading_position = indexes[id].start_reading_positions[i];
+        long end_reading_position = indexes[id].end_reading_positions[i];
+        size_t reading_bytes_number = static_cast<size_t>(end_reading_position - start_reading_position);
+        fopen_s(&data_file, current_filename, "a+b");
         void* current_read_data = malloc(reading_bytes_number);
         fseek(data_file, start_reading_position, 0);
         fread(current_read_data, 1, reading_bytes_number, data_file);
         memcpy(static_cast<char*>(return_data) + last_written_byte_position_in_main_buffer, current_read_data, reading_bytes_number);
         last_written_byte_position_in_main_buffer += reading_bytes_number;
-        free(current_read_data);
+        ///free(current_read_data);
         fclose(data_file);
     }
     return return_data;
