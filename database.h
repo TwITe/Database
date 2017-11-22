@@ -213,7 +213,6 @@ void* load(int id) {
     }
     FILE* data_file;
     size_t current_data_size = indexes[id].data_size;
-    //char buf[current_data_size];
     void* return_data = malloc(current_data_size);
     int last_written_byte_position_in_main_buffer = 0;
     for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
