@@ -22,7 +22,7 @@ TEST_CASE("Data was succesfully writed to files", "[data_store]") {
     REQUIRE(write_data(id, arr, sizeof(int) * 5));
 }
 
-TEST_CASE("Able to write data of type <int>", "[data_store]") {
+TEST_CASE("Able to write data of type <int>", "[data_store]") { //работает
     preset_settings();
     int data = 10;
     id++;

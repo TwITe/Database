@@ -12,8 +12,8 @@ using namespace std;
 
 struct index_data {
 	vector <string> file_names;
-	vector <long> start_reading_positions;
-	vector <long> end_reading_positions;
+	vector <streamoff> start_reading_positions;
+	vector <streamoff> end_reading_positions;
 	size_t data_size = 1;
 	bool deleted = false;
 };
@@ -55,7 +55,7 @@ bool save_current_data_size(int id, size_t current_data_size) {
 	return true;
 }
 
-bool save_file_name_and_reading_positions(int id, const string& current_filename, long start_position, long end_position) {
+bool save_file_name_and_reading_positions(int id, const string& current_filename, streamoff start_position, streamoff end_position) {
 	indexes[id].file_names.push_back(current_filename);
 	indexes[id].start_reading_positions.push_back(start_position);
 	indexes[id].end_reading_positions.push_back(end_position);
@@ -64,13 +64,14 @@ bool save_file_name_and_reading_positions(int id, const string& current_filename
 
 size_t get_file_free_space(const string& current_file_name) {
     ifstream current_file(current_file_name, ifstream::binary);
-    current_file.seekg(0, current_file.end);
-    if (static_cast<int>(current_file.tellg()) == 0) {
-        return data_file_size;
-    }
-    int current_data_file_size = static_cast<int>(current_file.tellg());
+    current_file.seekg(0, ios::end);
+	int last_written_byte_in_current_file_position = current_file.tellg();
+	if (last_written_byte_in_current_file_position == 0 || last_written_byte_in_current_file_position == -1) {
+		return data_file_size;
+	}
+	current_file.seekg(0, ios::beg);
     current_file.close();
-    return data_file_size - current_data_file_size;
+    return data_file_size - last_written_byte_in_current_file_position;
 }
 
 bool check_if_current_id_was_deleted(int id) {
@@ -88,10 +89,10 @@ void is_data_size_invalid(size_t current_data_size) {
 }
 
 void write_data_to_file(void* data, FILE* data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file,  streamoff cur_pos_in_the_file, int id) {
-    long start_position = cur_pos_in_the_file;
+    streamoff start_position = cur_pos_in_the_file;
 	data = ((static_cast<char*>(data))) + last_written_byte_position;
     fwrite(data, 1, bytes_number_to_write, data_file);
-    long end_position = ftell(data_file);
+    streamoff end_position = ftell(data_file);
     save_file_name_and_reading_positions(id, current_file, start_position, end_position);
 }
 
@@ -106,17 +107,19 @@ bool write_data(int id, void* data, size_t current_data_size) {
     int last_written_byte_position = 0;
     while (current_data_size != 0) {
         current_file = get_new_file_path();
-		if (errno_t err = fopen_s(&data_file, current_file.c_str(), "a+b") != 0) {
-			cerr << "File could not be opened";
-		}
-		else {
+		data_file = fopen(current_file.c_str(), "a+b");
+		//if (errno_t err = fopen_s(&data_file, current_file.c_str(), "a+b") != 0) {
+		//	cerr << "File could not be opened";
+		//}
+		//else {
 			size_t file_free_space = get_file_free_space(current_file);
-			fseek(data_file, data_file_size - file_free_space, SEEK_SET);
 			while (file_free_space == 0) {
 				current_file = get_new_file_path();
-				fopen_s(&data_file, current_file.c_str(), "a+b");
+				//fopen_s(&data_file, current_file.c_str(), "a+b");
+				data_file = fopen(current_file.c_str(), "a+b");
 				file_free_space = get_file_free_space(current_file);
 			}
+			fseek(data_file, data_file_size - file_free_space, SEEK_SET);
 			streamoff cur_pos_in_the_file = data_file_size - file_free_space;
 			size_t bytes_number_to_write;
 			if (current_data_size > file_free_space) {
@@ -132,7 +135,7 @@ bool write_data(int id, void* data, size_t current_data_size) {
 			is_data_size_invalid(current_data_size);
 			fclose(data_file);
 		}
-    }
+    //}
     return true;
 }
 
@@ -224,17 +227,21 @@ void* load(int id) {
     int last_written_byte_position_in_main_buffer = 0;
     for (unsigned int   i = 0; i < indexes[id].file_names.size(); i++) {
         const char* current_filename = indexes[id].file_names[i].c_str();
-        long start_reading_position = indexes[id].start_reading_positions[i];
-        long end_reading_position = indexes[id].end_reading_positions[i];
+        streamoff start_reading_position = indexes[id].start_reading_positions[i];
+		streamoff end_reading_position = indexes[id].end_reading_positions[i];
         size_t reading_bytes_number = static_cast<size_t>(end_reading_position - start_reading_position);
         fopen_s(&data_file, current_filename, "a+b");
+		fseek(data_file, 0, SEEK_SET);
+		void* rdata = malloc(4);
+		fread(rdata, 1, 4, data_file);
+		int *rd = static_cast<int*>(rdata);
         void* current_read_data = malloc(reading_bytes_number);
-        fseek(data_file, start_reading_position, 0);
+        fseek(data_file, start_reading_position, SEEK_SET);
         fread(current_read_data, 1, reading_bytes_number, data_file);
         memcpy(static_cast<char*>(return_data) + last_written_byte_position_in_main_buffer, current_read_data, reading_bytes_number);
         last_written_byte_position_in_main_buffer += reading_bytes_number;
-        ///free(current_read_data);
-        fclose(data_file);
+        free(current_read_data);
+        //fclose(data_file);
     }
     return return_data;
 }
