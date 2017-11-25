@@ -219,7 +219,7 @@ bool store_helper(int id, const vector <string> &data) {
     }
     write_data(id, casted_vector, data_size);
 	delete[] casted_vector;
-    return true;
+    return true;	
 }
 
 void* load(int id) {
@@ -251,4 +251,8 @@ void* load(int id) {
 void* get_writed_data(int id) {
     void *data = load(id);
     return data;
+}
+
+bool load_helper(int id) {
+
 }
