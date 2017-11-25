@@ -62,15 +62,17 @@ bool save_file_name_and_reading_positions(int id, const string& current_filename
 	return true;
 }
 
-size_t get_file_free_space(const string& current_file_name) {
-    ifstream current_file(current_file_name, ifstream::binary);
-    current_file.seekg(0, ios::end);
-	int last_written_byte_in_current_file_position = current_file.tellg();
-	if (last_written_byte_in_current_file_position == 0 || last_written_byte_in_current_file_position == -1) {
-		return data_file_size;
-	}
-	current_file.seekg(0, ios::beg);
-    current_file.close();
+size_t get_file_free_space(FILE* &data_file) {
+	fseek(data_file, 0, SEEK_END);
+	int last_written_byte_in_current_file_position = ftell(data_file);
+    //ifstream current_file(current_file_name, ifstream::binary);
+    //current_file.seekg(0, ios::end);
+	//int last_written_byte_in_current_file_position = static_cast<int>(current_file.tellg());
+	//if (last_written_byte_in_current_file_position == 0 || last_written_byte_in_current_file_position == -1) {
+	//	return data_file_size;
+	//}
+	//current_file.seekg(0, ios::beg);
+    //current_file.close();
     return data_file_size - last_written_byte_in_current_file_position;
 }
 
@@ -107,20 +109,22 @@ bool write_data(int id, void* data, size_t current_data_size) {
     int last_written_byte_position = 0;
     while (current_data_size != 0) {
         current_file = get_new_file_path();
-		data_file = fopen(current_file.c_str(), "a+b");
-		//if (errno_t err = fopen_s(&data_file, current_file.c_str(), "a+b") != 0) {
-		//	cerr << "File could not be opened";
-		//}
-		//else {
-			size_t file_free_space = get_file_free_space(current_file);
+		//data_file = fopen(current_file.c_str(), "a+b");
+		errno_t err = fopen_s(&data_file, current_file.c_str(), "a+b");
+		if (err != 0) {
+			cerr << "File could not be opened";
+		}
+		else {
+			size_t file_free_space = get_file_free_space(data_file);
 			while (file_free_space == 0) {
+				fclose(data_file);
 				current_file = get_new_file_path();
-				//fopen_s(&data_file, current_file.c_str(), "a+b");
-				data_file = fopen(current_file.c_str(), "a+b");
-				file_free_space = get_file_free_space(current_file);
+				fopen_s(&data_file, current_file.c_str(), "a+b");
+				//data_file = fopen(current_file.c_str(), "a+b");
+				file_free_space = get_file_free_space(data_file);
 			}
-			fseek(data_file, data_file_size - file_free_space, SEEK_SET);
-			streamoff cur_pos_in_the_file = data_file_size - file_free_space;
+			int cur_pos_in_the_file = data_file_size - file_free_space;
+			fseek(data_file, cur_pos_in_the_file, SEEK_SET);
 			size_t bytes_number_to_write;
 			if (current_data_size > file_free_space) {
 				bytes_number_to_write = file_free_space;
@@ -135,7 +139,7 @@ bool write_data(int id, void* data, size_t current_data_size) {
 			is_data_size_invalid(current_data_size);
 			fclose(data_file);
 		}
-    //}
+    }
     return true;
 }
 
@@ -183,6 +187,7 @@ bool store_helper(int id, const vector <int> &data) {
         casted_vector[i] = data[i];
     }
     write_data(id, casted_vector, data_size);
+	delete[] casted_vector;
     return true;
 }
 
@@ -194,7 +199,7 @@ bool store_helper(int id, const vector <double> &data) {
         casted_vector[i] = data[i];
     }
     write_data(id, casted_vector, data_size);
-	//delete[] casted_vector;
+	delete[] casted_vector;
     return true;
 }
 
@@ -213,6 +218,7 @@ bool store_helper(int id, const vector <string> &data) {
         }
     }
     write_data(id, casted_vector, data_size);
+	delete[] casted_vector;
     return true;
 }
 
@@ -231,17 +237,13 @@ void* load(int id) {
 		streamoff end_reading_position = indexes[id].end_reading_positions[i];
         size_t reading_bytes_number = static_cast<size_t>(end_reading_position - start_reading_position);
         fopen_s(&data_file, current_filename, "a+b");
-		fseek(data_file, 0, SEEK_SET);
-		void* rdata = malloc(4);
-		fread(rdata, 1, 4, data_file);
-		int *rd = static_cast<int*>(rdata);
         void* current_read_data = malloc(reading_bytes_number);
-        fseek(data_file, start_reading_position, SEEK_SET);
+        fseek(data_file, static_cast<long int>(start_reading_position), SEEK_SET);
         fread(current_read_data, 1, reading_bytes_number, data_file);
         memcpy(static_cast<char*>(return_data) + last_written_byte_position_in_main_buffer, current_read_data, reading_bytes_number);
         last_written_byte_position_in_main_buffer += reading_bytes_number;
         free(current_read_data);
-        //fclose(data_file);
+		fclose(data_file);
     }
     return return_data;
 }

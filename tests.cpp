@@ -123,16 +123,3 @@ TEST_CASE("Data was succesfully deleted", "[data_delete]") {
     delete_data(id);
     REQUIRE(indexes[id].deleted);
 }
-
-TEST_CASE("Able to load existing data") {
-    preset_settings();
-    const int array_length = 5;
-    int arr[array_length]{0, 1, 2, 3, 4};
-    id++;
-    write_data(id, arr, 20);
-    void* returned_data_num1 = load(id);
-    int* casted_data = static_cast<int*>(returned_data_num1);
-    for (int i = 0; i < 5; i++) {
-        arr[i] = casted_data[i];
-    }
-}
