@@ -5,9 +5,13 @@ using namespace std;
 int id = -1;
 
 void preset_settings() {
-	//set_path("/home/twite/CLionProjects/Database/data_files/");
-	set_path("c:\\users\\twite\\documents\\visual studio 2017\\projects\\database\\data_files\\");
-	set_data_file_size(20);
+#ifdef _WIN32
+    set_path("c:\\users\\twite\\documents\\visual studio 2017\\projects\\database\\data_files\\");
+#endif
+#ifdef __linux__
+    set_path("/home/twite/CLionProjects/Database/data_files/");
+#endif
+    set_data_file_size(20);
 }
 
 TEST_CASE("Check settings", "[general]") {
@@ -22,35 +26,31 @@ TEST_CASE("Data was succesfully writed to files", "[data_store]") {
     REQUIRE(write_data(id, arr, sizeof(int) * 5));
 }
 
-TEST_CASE("Able to write data of type <int>", "[data_store]") { //работает
+TEST_CASE("Able to write data of type <int>", "[data_store]") {
     preset_settings();
     int data = 10;
     id++;
-    store_helper(id, data);
-    int* returned_data = static_cast<int*>(get_writed_data(id));
-    REQUIRE(data == *returned_data);
+    REQUIRE(store_helper(id, data));
+    int writed_data = load_helper<int>(id);
+    REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Able to write data of type <double>", "[data_store]") {
     preset_settings();
     double data = 10.105;
     id++;
-    store_helper(id, data);
-    double* returned_data = static_cast<double*>(get_writed_data(id));
-    REQUIRE(data == *returned_data);
+    REQUIRE(store_helper(id, data));
+    double writed_data = load_helper<double>(id);
+    REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Able to write data of type <string>", "[data_store]") {
     preset_settings();
     string data = "database is working perfectly y f s";
     id++;
-    store_helper(id, data);
-    char* returned_data = static_cast<char*>(get_writed_data(id));
-    string converted_string;
-    for (unsigned int i = 0; i < data.size() * sizeof(char); i++) {
-        converted_string.push_back(*(returned_data + i));
-    }
-    REQUIRE(data == converted_string);
+    REQUIRE(store_helper(id, data));
+    string writed_data = load_helper<string>(id);
+    REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Able to write vector of type <int>", "[data_store]") {
@@ -59,13 +59,9 @@ TEST_CASE("Able to write vector of type <int>", "[data_store]") {
     for (int i = 0; i < 10; i++) {
         data.push_back(i * 2);
     }
-    store_helper(id, data);
-    int* casted_data = static_cast<int*>(get_writed_data(id));
-    vector <int> converted_int_type_vector;
-    for (unsigned int i = 0; i < data.size(); i++) {
-        converted_int_type_vector.push_back(*(casted_data + i));
-    }
-    REQUIRE(data == converted_int_type_vector);
+    REQUIRE(store_helper(id, data));
+    vector <int> writed_data = load_int_vector_helper(id);
+    REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Able to write vector of type <double>", "[data_store]") {
@@ -74,13 +70,9 @@ TEST_CASE("Able to write vector of type <double>", "[data_store]") {
     for (int i = 10; i > 0; i--) {
         data.push_back(i / 3.22);
     }
-    store_helper(id, data);
-    double* casted_data = static_cast<double*>(get_writed_data(id));
-    vector <double> converted_double_type_vector;
-    for (unsigned int i = 0; i < data.size(); i++) {
-        converted_double_type_vector.push_back(*(casted_data + i));
-    }
-    REQUIRE(data == converted_double_type_vector);
+    REQUIRE(store_helper(id, data));
+    vector <double> writed_data = load_double_vector_helper(id);
+    REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Able to write vector of type <string>", "[data_store]") {
@@ -90,17 +82,9 @@ TEST_CASE("Able to write vector of type <string>", "[data_store]") {
     for (char i = 'a'; i < 'g'; i++) {
         data.push_back(s + i);
     }
-    store_helper(id, data);
-    char* casted_data = static_cast<char*>(get_writed_data(id));
-    vector <string> converted_string_type_vector(data.size());
-    int j = 0;
-    for (unsigned int i = 0; i < data.size(); i++) {
-        for (unsigned int ii = 0; ii < data[i].size(); ii++) {
-            converted_string_type_vector[i].push_back(*(casted_data + j));
-            j++;
-        }
-    }
-    REQUIRE(data == converted_string_type_vector);
+    REQUIRE(store_helper(id, data));
+    vector <string> writed_data = load_string_vector_helper(id);
+    REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Created datafiles exists", "[data_store]") {
