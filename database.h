@@ -16,13 +16,13 @@ struct index_data {
 	vector <streamoff> end_reading_positions;
 	size_t data_size;
 	bool deleted = false;
+    int metadata = 0;
 };
 
 string user_path;
 int data_file_number = -1;
 unsigned int data_file_size = 8388608;
 unordered_map <int,index_data> indexes;
-unordered_map <int,vector <size_t>> string_sizes;
 
 void check_path() {
     if (user_path.empty()) {
@@ -67,11 +67,6 @@ size_t get_file_free_space(FILE* &data_file) {
 	fseek(data_file, 0, SEEK_END);
 	long int last_written_byte_in_current_file_position = ftell(data_file);
     return static_cast<size_t>(data_file_size - last_written_byte_in_current_file_position);
-}
-
-void delete_data(int id) {
-    indexes.erase(id);
-    indexes[id].deleted = true;
 }
 
 bool check_if_current_id_was_deleted(int id) {
@@ -134,7 +129,8 @@ bool write_data(int id, void* data, size_t current_data_size) {
 bool store(int id, void* data, size_t data_size) {
     check_settings();
     if (check_if_current_id_is_already_exists(id)) {
-        delete_data(id);
+        cerr << "Current id is already in use";
+        return false;
     }
     save_current_data_size(id, data_size);
     write_data(id, data, data_size);
@@ -153,7 +149,7 @@ bool store_helper(int id, double data) {
 
 bool store_helper(int id, const string &data) {
 	size_t data_size = data.size();
-	char* casted_string = new char[data_size + 1];
+	char* casted_string = new char[data_size];
 	strcpy(casted_string, data.c_str());
     bool store_result = store(id, casted_string, data_size);
     delete[] casted_string;
@@ -184,19 +180,24 @@ bool store_helper(int id, const vector <double> &data) {
 
 bool store_helper(int id, const vector <string> &data) {
     size_t data_size = 0;
+    vector <int> string_sizes;
+    string_sizes.push_back(data.size());
     for (const auto &str: data) {
         data_size += str.size();
-        string_sizes[id].push_back(str.size());
+        string_sizes.push_back(str.size());
     }
     char* casted_vector = new char[data_size];
     int j = 0;
     for (const auto &current_string : data) {
-        for (auto current_char: current_string) {
-            casted_vector[j]= current_char;
+        for (int i = 0; i < current_string.size(); i++) {
+            casted_vector[j] = current_string[i];
             j++;
         }
     }
+    int meta_data_id = rand();
+    store_helper(meta_data_id, string_sizes);
     bool store_result = store(id, casted_vector, data_size);
+    indexes[id].metadata = meta_data_id;
 	delete[] casted_vector;
     return store_result;
 }
@@ -210,6 +211,7 @@ void* load(int id) {
     size_t current_data_size = indexes[id].data_size;
     void* return_data = malloc(current_data_size);
     int last_written_byte_position_in_main_buffer = 0;
+    char* rd = static_cast<char*>(return_data);
     for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
         const char* current_filename = indexes[id].file_names[i].c_str();
         streamoff start_reading_position = indexes[id].start_reading_positions[i];
@@ -219,7 +221,7 @@ void* load(int id) {
         void* current_read_data = malloc(reading_bytes_number);
         fseek(data_file, static_cast<long int>(start_reading_position), SEEK_SET);
         fread(current_read_data, 1, reading_bytes_number, data_file);
-        memcpy(static_cast<char*>(return_data) + last_written_byte_position_in_main_buffer, current_read_data, reading_bytes_number);
+        memcpy(static_cast<void*>(static_cast<char*>(return_data + last_written_byte_position_in_main_buffer)), current_read_data, reading_bytes_number);
         last_written_byte_position_in_main_buffer += reading_bytes_number;
         free(current_read_data);
 		fclose(data_file);
@@ -255,7 +257,7 @@ vector <int> load_int_vector_helper(int id) {
     int* loaded_data = static_cast<int*>(load(id));
     vector <int> return_data;
     for (unsigned int i = 0; i < indexes[id].data_size / sizeof(int); i++) {
-        return_data.push_back(*(loaded_data + i));
+        return_data.push_back(loaded_data[i]);
     }
     return return_data;
 }
@@ -263,20 +265,26 @@ vector <int> load_int_vector_helper(int id) {
 vector <double> load_double_vector_helper(int id) {
     double* loaded_data = static_cast<double*>(load(id));
     vector <double> return_data;
-    for (unsigned int i = 0; i < indexes[id].data_size / sizeof(double); i++) {
-        return_data.push_back(*(loaded_data + i));
+    for (int i = 0; i < indexes[id].data_size / sizeof(double); i++) {
+        return_data.push_back(loaded_data[i]);
     }
     return return_data;
 }
 
 vector <string> load_string_vector_helper(int id) {
-    char* loaded_data = static_cast<char*>(load(id));
-    vector <string> return_data(string_sizes[id].size());
-    int last_loaded_byte_position = 0;
-    for (unsigned int i = 0; i < string_sizes[id].size(); i++) {
-        for (unsigned int ii = 0; ii < string_sizes[id][i]; ii++) {
-            return_data[i].push_back(*(loaded_data + last_loaded_byte_position));
-            last_loaded_byte_position++;
+    int* meta_data = (static_cast<int*>(load(indexes[id].metadata)));
+    int strings_number = meta_data[0];
+    vector <int> string_sizes;
+    for (int i = 1; i <= strings_number; i++) {
+        string_sizes.push_back(meta_data[i]);
+    }
+    char* main_data = static_cast<char*>(load(id));
+    vector <string> return_data(strings_number);
+    //int last_loaded_byte_position = 0;
+    for (unsigned int i = 0; i <= strings_number; i++) {
+        for (unsigned int ii = 0; ii < string_sizes[i]; ii++) {
+            return_data[i].push_back(*main_data);
+            main_data++;
         }
     }
     return return_data;

@@ -46,64 +46,58 @@ TEST_CASE("Able to write data of type <double>", "[data_store]") {
 
 TEST_CASE("Able to write data of type <string>", "[data_store]") {
     preset_settings();
-    string data = "database is working perfectly y f s";
+    string data = "aaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbbbbbb fsdfs";
     id++;
-    REQUIRE(store_helper(id, data));
+    store_helper(id, data);
     string writed_data = load_helper<string>(id);
     REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Able to write vector of type <int>", "[data_store]") {
     preset_settings();
-    vector <int> data;
+    vector<int> data;
+    id++;
     for (int i = 0; i < 10; i++) {
         data.push_back(i * 2);
     }
-    REQUIRE(store_helper(id, data));
-    vector <int> writed_data = load_int_vector_helper(id);
+    store_helper(id, data);
+    vector<int> writed_data = load_int_vector_helper(id);
     REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Able to write vector of type <double>", "[data_store]") {
     preset_settings();
-    vector <double> data;
+    id++;
+    vector<double> data;
     for (int i = 10; i > 0; i--) {
         data.push_back(i / 3.22);
     }
     REQUIRE(store_helper(id, data));
-    vector <double> writed_data = load_double_vector_helper(id);
+    vector<double> writed_data = load_double_vector_helper(id);
     REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Able to write vector of type <string>", "[data_store]") {
     preset_settings();
-    vector <string> data;
+    id++;
+    vector<string> data;
     string s = "data";
     for (char i = 'a'; i < 'g'; i++) {
         data.push_back(s + i);
     }
-    REQUIRE(store_helper(id, data));
-    vector <string> writed_data = load_string_vector_helper(id);
+    store_helper(id, data);
+    vector<string> writed_data = load_string_vector_helper(id);
     REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Created datafiles exists", "[data_store]") {
     preset_settings();
-    int arr[5]{ 0, 1, 2, 3, 4 };
     id++;
+    int arr[5]{ 0, 1, 2, 3, 4 };
     write_data(id, arr, 20);
     ifstream current_data_file;
     for (const auto& current_file_name : indexes[id].file_names) {
         current_data_file.open(current_file_name);
         REQUIRE(current_data_file.is_open());
     }
-}
-
-TEST_CASE("Data was succesfully deleted", "[data_delete]") {
-    preset_settings();
-    int arr[5]{ 0, 1, 2, 3, 4 };
-    id++;
-    write_data(id, arr, 20);
-    delete_data(id);
-    REQUIRE(indexes[id].deleted);
 }
