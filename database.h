@@ -158,10 +158,17 @@ bool store_helper(int id, const string &data) {
 }
 
 bool store_helper(int id, const vector <int> &data) {
-    size_t data_size = sizeof(int) * data.size();
+    size_t data_size = 40;
+    data_size += sizeof(int) * data.size();
     int* casted_vector = new int[data_size];
+    memset(&casted_vector[0], 0, 10);
+    int data_size_copy = data_size;
+    for (int i = 9; i >= 0; i--) {
+        casted_vector[i] = data_size_copy % 10;
+        data_size_copy /= 10;
+    }
     for (unsigned int i = 0; i < data.size(); i++) {
-        casted_vector[i] = data[i];
+        casted_vector[10 + i] = data[i];
     }
     bool store_result = store(id, casted_vector, data_size);
 	delete[] casted_vector;
@@ -169,10 +176,17 @@ bool store_helper(int id, const vector <int> &data) {
 }
 
 bool store_helper(int id, const vector <double> &data) {
-    size_t data_size = sizeof(double) * data.size();
+    size_t data_size = 80;
+    data_size += sizeof(double) * data.size();
     double* casted_vector = new double[data_size];
+    memset(&casted_vector[0], 0, 10);
+    int data_size_copy = data_size;
+    for (int i = 9; i >= 0; i--) {
+        casted_vector[i] = data_size_copy % 10;
+        data_size_copy /= 10;
+    }
     for (unsigned int i = 0; i < data.size(); i++) {
-        casted_vector[i] = data[i];
+        casted_vector[i] = data[10 + i];
     }
     bool store_result = store(id, casted_vector, data_size);
 	delete[] casted_vector;
@@ -191,8 +205,7 @@ bool store_helper(int id, const vector <string> &data) {
     store_helper(meta_data_id, string_sizes);
     string temp = to_string(meta_data_id);
     char const *charnum = temp.c_str();
-
-    char number[10] /*{'/', '/', '/', '/', '/', '/', '/', '/', '/', '/'}*/;
+    char number[10];
     memset(&number[0], '/', 10);
     for (int i = 0; i < temp.size(); i++) {
         number[i] = *(charnum + i);
@@ -233,7 +246,8 @@ void* load(int id) {
         void* current_read_data = malloc(reading_bytes_number);
         fseek(data_file, static_cast<long int>(start_reading_position), SEEK_SET);
         fread(current_read_data, 1, reading_bytes_number, data_file);
-        memcpy(static_cast<void*>(static_cast<char*>(return_data + last_written_byte_position_in_main_buffer)), current_read_data, reading_bytes_number);
+        char* cur_pos = static_cast<char*>(return_data) + last_written_byte_position_in_main_buffer;
+        memcpy(cur_pos, current_read_data, reading_bytes_number);
         last_written_byte_position_in_main_buffer += reading_bytes_number;
         free(current_read_data);
 		fclose(data_file);
@@ -267,18 +281,30 @@ string load_helper<string>(int id) {
 
 vector <int> load_int_vector_helper(int id) {
     int* loaded_data = static_cast<int*>(load(id));
+    int data_size = 0;
+    for (int i = 0; i < 10; i++) {
+        data_size *= 10;
+        data_size += loaded_data[i];
+    }
+    data_size -= 40;
     vector <int> return_data;
-    for (unsigned int i = 0; i < indexes[id].data_size / sizeof(int); i++) {
-        return_data.push_back(loaded_data[i]);
+    for (unsigned int i = 0; i < data_size / sizeof(int); i++) {
+        return_data.push_back(loaded_data[10 + i]);
     }
     return return_data;
 }
 
 vector <double> load_double_vector_helper(int id) {
     double* loaded_data = static_cast<double*>(load(id));
+    int data_size = 0;
+    for (int i = 0; i < 10; i++) {
+        data_size *= 10;
+        data_size += loaded_data[i];
+    }
+    data_size -= 80;
     vector <double> return_data;
-    for (int i = 0; i < indexes[id].data_size / sizeof(double); i++) {
-        return_data.push_back(loaded_data[i]);
+    for (unsigned int i = 0; i < data_size / sizeof(double); i++) {
+        return_data.push_back(loaded_data[10 + i]);
     }
     return return_data;
 }
