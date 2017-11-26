@@ -46,9 +46,9 @@ TEST_CASE("Able to write data of type <double>", "[data_store]") {
 
 TEST_CASE("Able to write data of type <string>", "[data_store]") {
     preset_settings();
-    string data = "aaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbbbbbb fsdfs";
+    string data = "database is working perfectly (yes(no)) GG > WP";
     id++;
-    store_helper(id, data);
+    REQUIRE(store_helper(id, data));
     string writed_data = load_helper<string>(id);
     REQUIRE(data == writed_data);
 }
@@ -80,12 +80,12 @@ TEST_CASE("Able to write vector of type <double>", "[data_store]") {
 TEST_CASE("Able to write vector of type <string>", "[data_store]") {
     preset_settings();
     id++;
-    vector<string> data;
+    vector<string> data(0);
     string s = "data";
     for (char i = 'a'; i < 'g'; i++) {
         data.push_back(s + i);
     }
-    store_helper(id, data);
+    REQUIRE(store_helper(id, data));
     vector<string> writed_data = load_string_vector_helper(id);
     REQUIRE(data == writed_data);
 }

@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstring>
 #include <cstdlib>
+#include <algorithm>
 using namespace std;
 
 struct index_data {
@@ -149,7 +150,7 @@ bool store_helper(int id, double data) {
 
 bool store_helper(int id, const string &data) {
 	size_t data_size = data.size();
-	char* casted_string = new char[data_size];
+	char* casted_string = new char[data_size + 1];
 	strcpy(casted_string, data.c_str());
     bool store_result = store(id, casted_string, data_size);
     delete[] casted_string;
@@ -179,25 +180,37 @@ bool store_helper(int id, const vector <double> &data) {
 }
 
 bool store_helper(int id, const vector <string> &data) {
-    size_t data_size = 0;
+    size_t data_size = 11;
     vector <int> string_sizes;
     string_sizes.push_back(data.size());
     for (const auto &str: data) {
         data_size += str.size();
         string_sizes.push_back(str.size());
     }
-    char* casted_vector = new char[data_size];
-    int j = 0;
-    for (const auto &current_string : data) {
-        for (int i = 0; i < current_string.size(); i++) {
-            casted_vector[j] = current_string[i];
-            j++;
-        }
-    }
     int meta_data_id = rand();
     store_helper(meta_data_id, string_sizes);
+    string temp = to_string(meta_data_id);
+    char const *charnum = temp.c_str();
+
+    char number[10] /*{'/', '/', '/', '/', '/', '/', '/', '/', '/', '/'}*/;
+    memset(&number[0], '/', 10);
+    for (int i = 0; i < temp.size(); i++) {
+        number[i] = *(charnum + i);
+    }
+    char* casted_vector = new char[data_size];
+    memset(&casted_vector[0], 0, data_size);
+    for (int i = 0; i < 10; i++) {
+        casted_vector[i] = number[i];
+    }
+    int i = 10;
+    for (const auto &current_string : data) {
+        for (char current_char : current_string) {
+            casted_vector[i] = current_char;
+            i++;
+        }
+    }
+    casted_vector[data_size] = '\0';
     bool store_result = store(id, casted_vector, data_size);
-    indexes[id].metadata = meta_data_id;
 	delete[] casted_vector;
     return store_result;
 }
@@ -211,7 +224,6 @@ void* load(int id) {
     size_t current_data_size = indexes[id].data_size;
     void* return_data = malloc(current_data_size);
     int last_written_byte_position_in_main_buffer = 0;
-    char* rd = static_cast<char*>(return_data);
     for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
         const char* current_filename = indexes[id].file_names[i].c_str();
         streamoff start_reading_position = indexes[id].start_reading_positions[i];
@@ -272,16 +284,24 @@ vector <double> load_double_vector_helper(int id) {
 }
 
 vector <string> load_string_vector_helper(int id) {
-    int* meta_data = (static_cast<int*>(load(indexes[id].metadata)));
+    char* main_data = static_cast<char*>(load(id));
+    char not_casted_meta_data_id[10];
+    for (int i = 0; i < 10; i++) {
+        if (main_data[i] == '/') {
+            break;
+        }
+        not_casted_meta_data_id[i] = main_data[i];
+    }
+    int meta_data_id = atoi(not_casted_meta_data_id);
+    int* meta_data = (static_cast<int*>(load(meta_data_id)));
     int strings_number = meta_data[0];
     vector <int> string_sizes;
     for (int i = 1; i <= strings_number; i++) {
         string_sizes.push_back(meta_data[i]);
     }
-    char* main_data = static_cast<char*>(load(id));
+    main_data = main_data + 10;
     vector <string> return_data(strings_number);
-    //int last_loaded_byte_position = 0;
-    for (unsigned int i = 0; i <= strings_number; i++) {
+    for (unsigned int i = 0; i < strings_number; i++) {
         for (unsigned int ii = 0; ii < string_sizes[i]; ii++) {
             return_data[i].push_back(*main_data);
             main_data++;
