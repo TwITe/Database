@@ -97,7 +97,6 @@ void write_data_to_file(void* data, FILE* data_file, int last_written_byte_posit
 }
 
 bool write_data(int id, void* data, size_t current_data_size) {
-    int* rd = static_cast<int*>(data);
     FILE* data_file;
     string current_file;
     int last_written_byte_position = 0;
@@ -111,7 +110,7 @@ bool write_data(int id, void* data, size_t current_data_size) {
             data_file = fopen(current_file.c_str(), "a+b");
             file_free_space = get_file_free_space(data_file);
         }
-        streamoff cur_pos_in_the_file = data_file_size - file_free_space;
+        long int cur_pos_in_the_file = data_file_size - file_free_space;
         fseek(data_file, cur_pos_in_the_file, SEEK_SET);
         size_t bytes_number_to_write;
         if (current_data_size > file_free_space) {
