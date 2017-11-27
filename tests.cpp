@@ -60,7 +60,7 @@ TEST_CASE("Able to write vector of type <int>", "[data_store]") {
     for (int i = 0; i < 10; i++) {
         data.push_back(i * 2);
     }
-    store_helper(id, data);
+    REQUIRE(store_helper(id, data));
     vector<int> writed_data = load_int_vector_helper(id);
     REQUIRE(data == writed_data);
 }
@@ -85,8 +85,7 @@ TEST_CASE("Able to write vector of type <string>", "[data_store]") {
     for (char i = 'a'; i < 'g'; i++) {
         data.push_back(s + i);
     }
-	store_helper(id, data);
-    //REQUIRE(store_helper(id, data));
+    REQUIRE(store_helper(id, data));
     vector<string> writed_data = load_string_vector_helper(id);
     REQUIRE(data == writed_data);
 }
