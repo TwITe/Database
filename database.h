@@ -15,9 +15,8 @@ struct index_data {
 	vector <string> file_names;
 	vector <streamoff> start_reading_positions;
 	vector <streamoff> end_reading_positions;
-	size_t data_size;
+	size_t data_size = 0;
 	bool deleted = false;
-    int metadata = 0;
 };
 
 string user_path;
@@ -162,7 +161,7 @@ bool store_helper(int id, const vector <int> &data) {
     data_size += sizeof(int) * data.size();
     int* casted_vector = new int[data_size];
     memset(&casted_vector[0], 0, 10);
-    int data_size_copy = data_size;
+    int data_size_copy = static_cast<int>(data_size);
     for (int i = 9; i >= 0; i--) {
         casted_vector[i] = data_size_copy % 10;
         data_size_copy /= 10;
@@ -180,13 +179,13 @@ bool store_helper(int id, const vector <double> &data) {
     data_size += sizeof(double) * data.size();
     double* casted_vector = new double[data_size];
     memset(&casted_vector[0], 0, 10);
-    int data_size_copy = data_size;
+    size_t data_size_copy = data_size;
     for (int i = 9; i >= 0; i--) {
         casted_vector[i] = data_size_copy % 10;
         data_size_copy /= 10;
     }
     for (unsigned int i = 0; i < data.size(); i++) {
-        casted_vector[i] = data[10 + i];
+        casted_vector[10 + i] = data[i];
     }
     bool store_result = store(id, casted_vector, data_size);
 	delete[] casted_vector;
@@ -318,12 +317,12 @@ vector <string> load_string_vector_helper(int id) {
         }
         not_casted_meta_data_id[i] = main_data[i];
     }
-    int meta_data_id = atoi(not_casted_meta_data_id);
+    int meta_data_id = stoi(not_casted_meta_data_id);
     int* meta_data = (static_cast<int*>(load(meta_data_id)));
-    int strings_number = meta_data[0];
+    int strings_number = meta_data[10];
     vector <int> string_sizes;
     for (int i = 1; i <= strings_number; i++) {
-        string_sizes.push_back(meta_data[i]);
+        string_sizes.push_back(meta_data[10 + i]);
     }
     main_data = main_data + 10;
     vector <string> return_data(strings_number);
