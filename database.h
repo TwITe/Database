@@ -203,10 +203,10 @@ bool store_helper(int id, const vector <string> &data) {
     int meta_data_id = rand();
     store_helper(meta_data_id, string_sizes);
     string temp = to_string(meta_data_id);
-    char const *charnum = temp.c_str();
+	const char *charnum = temp.c_str();
     char number[10];
     memset(&number[0], '/', 10);
-    for (int i = 0; i < temp.size(); i++) {
+    for (size_t i = 0; i < temp.size(); i++) {
         number[i] = *(charnum + i);
     }
     char* casted_vector = new char[data_size];
@@ -298,7 +298,7 @@ vector <double> load_double_vector_helper(int id) {
     int data_size = 0;
     for (int i = 0; i < 10; i++) {
         data_size *= 10;
-        data_size += loaded_data[i];
+        data_size += static_cast<int>(loaded_data[i]);
     }
     data_size -= 80;
     vector <double> return_data;
@@ -326,8 +326,8 @@ vector <string> load_string_vector_helper(int id) {
     }
     main_data = main_data + 10;
     vector <string> return_data(strings_number);
-    for (unsigned int i = 0; i < strings_number; i++) {
-        for (unsigned int ii = 0; ii < string_sizes[i]; ii++) {
+    for (int i = 0; i < strings_number; i++) {
+        for (int ii = 0; ii < string_sizes[i]; ii++) {
             return_data[i].push_back(*main_data);
             main_data++;
         }
