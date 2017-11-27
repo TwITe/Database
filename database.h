@@ -19,7 +19,6 @@ struct index_data {
 	vector <streamoff> start_reading_positions;
 	vector <streamoff> end_reading_positions;
 	size_t data_size = 0;
-	bool deleted = false;
 };
 
 string user_path;
@@ -72,8 +71,8 @@ size_t get_file_free_space(FILE* &data_file) {
     return static_cast<size_t>(data_file_size - last_written_byte_in_current_file_position);
 }
 
-bool check_if_current_id_was_deleted(int id) {
-	return indexes[id].deleted;
+bool check_if_current_id_not_exists(int id) {
+	return (indexes.count(id) == 0);
 }
 
 bool check_if_current_id_is_already_exists(int id) {
@@ -232,9 +231,8 @@ bool store_helper(int id, const vector <string> &data) {
 }
 
 void* load(int id) {
-    if (check_if_current_id_was_deleted(id)) {
-        cerr << "Current data not exists!";
-        return nullptr;
+    if (check_if_current_id_not_exists(id)) {
+		throw runtime_error("Current data not exists!");
     }
     FILE* data_file;
     size_t current_data_size = indexes[id].data_size;
