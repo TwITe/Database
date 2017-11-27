@@ -263,19 +263,24 @@ T load_helper(int id) {
 template <>
 int load_helper<int>(int id) {
     int* loaded_data =  static_cast<int*>(load(id));
-    return *loaded_data;
+    int return_data = *loaded_data;
+    delete[] loaded_data;
+    return return_data;
 }
 
 template <>
 double load_helper<double>(int id) {
     double* loaded_data =  static_cast<double*>(load(id));
-    return *loaded_data;
+    double return_data = *loaded_data;
+    delete[] loaded_data;
+    return return_data;
 }
 
 template <>
 string load_helper<string>(int id) {
     char* loaded_data = static_cast<char*>(load(id));
     string return_data(loaded_data);
+    delete[] loaded_data;
     return return_data;
 }
 
@@ -291,6 +296,7 @@ vector <int> load_int_vector_helper(int id) {
     for (unsigned int i = 0; i < data_size / sizeof(int); i++) {
         return_data.push_back(loaded_data[10 + i]);
     }
+    delete[] loaded_data;
     return return_data;
 }
 
@@ -306,6 +312,7 @@ vector <double> load_double_vector_helper(int id) {
     for (unsigned int i = 0; i < data_size / sizeof(double); i++) {
         return_data.push_back(loaded_data[10 + i]);
     }
+    delete[] loaded_data;
     return return_data;
 }
 
@@ -325,13 +332,15 @@ vector <string> load_string_vector_helper(int id) {
     for (int i = 1; i <= strings_number; i++) {
         string_sizes.push_back(meta_data[10 + i]);
     }
-    main_data = main_data + 10;
+    char* iter = main_data + 10;
     vector <string> return_data(strings_number);
     for (int i = 0; i < strings_number; i++) {
         for (int ii = 0; ii < string_sizes[i]; ii++) {
-            return_data[i].push_back(*main_data);
-            main_data++;
+            return_data[i].push_back(*iter);
+            iter++;
         }
     }
+    delete[] main_data;
+    delete[] meta_data;
     return return_data;
 }
