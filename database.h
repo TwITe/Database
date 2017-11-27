@@ -151,7 +151,8 @@ bool store_helper(int id, const string &data) {
 	size_t data_size = data.size();
 	char* casted_string = new char[data_size + 1];
 	strcpy(casted_string, data.c_str());
-    bool store_result = store(id, casted_string, data_size);
+	casted_string[data_size] = '\0';
+    bool store_result = store(id, casted_string, data_size + 1);
     delete[] casted_string;
     return store_result;
 }
@@ -193,7 +194,7 @@ bool store_helper(int id, const vector <double> &data) {
 }
 
 bool store_helper(int id, const vector <string> &data) {
-    size_t data_size = 11;
+    size_t data_size = 10;
     vector <int> string_sizes;
     string_sizes.push_back(data.size());
     for (const auto &str: data) {
@@ -209,7 +210,7 @@ bool store_helper(int id, const vector <string> &data) {
     for (size_t i = 0; i < temp.size(); i++) {
         number[i] = *(charnum + i);
     }
-    char* casted_vector = new char[data_size];
+    char* casted_vector = new char[data_size + 1];
     memset(&casted_vector[0], 0, data_size);
     for (int i = 0; i < 10; i++) {
         casted_vector[i] = number[i];
@@ -221,15 +222,15 @@ bool store_helper(int id, const vector <string> &data) {
             i++;
         }
     }
-    casted_vector[data_size] = '\0';
-    bool store_result = store(id, casted_vector, data_size);
+	casted_vector[data_size] = '\0';
+    bool store_result = store(id, casted_vector, data_size + 1);
 	delete[] casted_vector;
     return store_result;
 }
 
 void* load(int id) {
     if (check_if_current_id_was_deleted(id)) {
-        cerr << "Current data was deleted and no longer exists!";
+        cerr << "Current data not exists!";
         return nullptr;
     }
     FILE* data_file;

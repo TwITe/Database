@@ -19,7 +19,7 @@ TEST_CASE("Check settings", "[general]") {
     REQUIRE_THROWS(check_settings());
 }
 
-TEST_CASE("Data was succesfully writed to files", "[data_store]") {
+TEST_CASE("Data writing function working correctly", "[data_store]") {
     preset_settings();
     int arr[5]{0, 1, 2, 3, 4};
     id++;
@@ -85,7 +85,8 @@ TEST_CASE("Able to write vector of type <string>", "[data_store]") {
     for (char i = 'a'; i < 'g'; i++) {
         data.push_back(s + i);
     }
-    REQUIRE(store_helper(id, data));
+	store_helper(id, data);
+    //REQUIRE(store_helper(id, data));
     vector<string> writed_data = load_string_vector_helper(id);
     REQUIRE(data == writed_data);
 }
