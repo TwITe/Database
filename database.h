@@ -1,6 +1,9 @@
 //It's database library
 //Call function "set_data_filesize" to set the default size of the data file
 //Call function "set_path" to set the path for saving data files
+#ifdef _MSC_VER
+#define _CRT_SECURE_NO_WARNINGS
+#endif
 #include <iostream>
 #include <fstream>
 #include <string>
