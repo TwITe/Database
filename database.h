@@ -71,7 +71,7 @@ size_t get_file_free_space(FILE* &data_file) {
     return static_cast<size_t>(data_file_size - last_written_byte_in_current_file_position);
 }
 
-bool check_if_current_id_not_exists(int id) {
+bool check_if_current_id_does_not_exists(int id) {
 	return (indexes.count(id) == 0);
 }
 
@@ -131,8 +131,7 @@ bool write_data(int id, void* data, size_t current_data_size) {
 bool store(int id, void* data, size_t data_size) {
     check_settings();
     if (check_if_current_id_is_already_exists(id)) {
-        cerr << "Current id is already in use";
-        return false;
+        throw runtime_error("Current id is already in use");
     }
     save_current_data_size(id, data_size);
     write_data(id, data, data_size);
@@ -231,8 +230,8 @@ bool store_helper(int id, const vector <string> &data) {
 }
 
 void* load(int id) {
-    if (check_if_current_id_not_exists(id)) {
-		throw runtime_error("Current data not exists!");
+    if (check_if_current_id_does_not_exists(id)) {
+		throw runtime_error("Current data does not exists!");
     }
     FILE* data_file;
     size_t current_data_size = indexes[id].data_size;

@@ -19,6 +19,17 @@ TEST_CASE("Check settings", "[general]") {
     REQUIRE_THROWS(check_settings());
 }
 
+TEST_CASE("Get throw during a load of not existing data", "[data_load]") {
+    preset_settings();
+    REQUIRE_THROWS(load(55));
+}
+
+TEST_CASE("Get throw during a store of already existing data", "[data_store]") {
+    preset_settings();
+    store_helper(100, 5);
+    REQUIRE_THROWS(store_helper(100, 76));
+}
+
 TEST_CASE("Data writing function working correctly", "[data_store]") {
     preset_settings();
     int arr[5]{0, 1, 2, 3, 4};
