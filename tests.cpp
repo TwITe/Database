@@ -14,60 +14,60 @@ void preset_settings() {
     set_data_file_size(20);
 }
 
-TEST_CASE("Check settings", "[general]") {
+TEST_CASE("Get throw for invalid settings", "[general]") {
     set_path("");
     REQUIRE_THROWS(check_settings());
 }
 
-TEST_CASE("Get throw during a load of not existing data", "[data_load]") {
+TEST_CASE("Do not get throw for valid settings", "[general]") {
     preset_settings();
+    REQUIRE(check_settings());
+}
+
+TEST_CASE("Get throw during a load of not existing data", "[data_load]") {
     REQUIRE_THROWS(load(55));
 }
 
 TEST_CASE("Get throw during a store of already existing data", "[data_store]") {
-    preset_settings();
     store_helper(100, 5);
     REQUIRE_THROWS(store_helper(100, 76));
 }
 
 TEST_CASE("Data writing function working correctly", "[data_store]") {
-    preset_settings();
     int arr[5]{0, 1, 2, 3, 4};
     id++;
     REQUIRE(write_data(id, arr, sizeof(int) * 5));
 }
 
 TEST_CASE("Able to write data of type <int>", "[data_store]") {
-    preset_settings();
-    int data = 10;
     id++;
+    int data = 10;
     REQUIRE(store_helper(id, data));
     int writed_data = load_helper<int>(id);
     REQUIRE(data == writed_data);
 }
 
+
+
 TEST_CASE("Able to write data of type <double>", "[data_store]") {
-    preset_settings();
-    double data = 10.105;
     id++;
-    REQUIRE(store_helper(id, data));
+    double data = 10.105;
+    store_helper(id, data);
     double writed_data = load_helper<double>(id);
     REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Able to write data of type <string>", "[data_store]") {
-    preset_settings();
-    string data = "database is working perfectly (yes(no)) GG > WP";
     id++;
+    string data = "database is working perfectly (yes(no)) GG > WP";
     REQUIRE(store_helper(id, data));
     string writed_data = load_helper<string>(id);
     REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Able to write vector of type <int>", "[data_store]") {
-    preset_settings();
-    vector<int> data;
     id++;
+    vector<int> data;
     for (int i = 0; i < 10; i++) {
         data.push_back(i * 2);
     }
@@ -77,7 +77,6 @@ TEST_CASE("Able to write vector of type <int>", "[data_store]") {
 }
 
 TEST_CASE("Able to write vector of type <double>", "[data_store]") {
-    preset_settings();
     id++;
     vector<double> data;
     for (int i = 10; i > 0; i--) {
@@ -89,9 +88,8 @@ TEST_CASE("Able to write vector of type <double>", "[data_store]") {
 }
 
 TEST_CASE("Able to write vector of type <string>", "[data_store]") {
-    preset_settings();
     id++;
-    vector<string> data(0);
+    vector<string> data;
     string s = "data";
     for (char i = 'a'; i < 'g'; i++) {
         data.push_back(s + i);
@@ -101,14 +99,68 @@ TEST_CASE("Able to write vector of type <string>", "[data_store]") {
     REQUIRE(data == writed_data);
 }
 
-TEST_CASE("Created datafiles exists", "[data_store]") {
-    preset_settings();
+TEST_CASE("Get throw during loading deleted data", "[data_delete]") {
     id++;
-    int arr[5]{ 0, 1, 2, 3, 4 };
-    write_data(id, arr, 20);
-    ifstream current_data_file;
-    for (const auto& current_file_name : indexes[id].file_names) {
-        current_data_file.open(current_file_name);
-        REQUIRE(current_data_file.is_open());
+    int data = 4341;
+    store_helper(id, data);
+    delete_id(id);
+    REQUIRE_THROWS(load_helper<int>(id));
+}
+
+TEST_CASE("Able to load map from file", "[map_load]") {
+    indexes.clear();
+    load_map_from_file();
+    get_deleted_indexes();
+}
+
+TEST_CASE("Able to write data of type <int> after loading map from file", "[data_store]") {
+    id = 1;
+    int data = 10;
+    int writed_data = load_helper<int>(id);
+    REQUIRE(data == writed_data);
+}
+
+TEST_CASE("Able to write data of type <double> after loading map from file", "[data_store]") {
+    id++;
+    double data = 10.105;
+    double writed_data = load_helper<double>(id);
+    REQUIRE(data == writed_data);
+}
+
+TEST_CASE("Able to write data of type <string> after loading map from file", "[data_store]") {
+    id++;
+    string data = "database is working perfectly (yes(no)) GG > WP";
+    string writed_data = load_helper<string>(id);
+    REQUIRE(data == writed_data);
+}
+
+TEST_CASE("Able to write vector of type <int> after loading map from file", "[data_store]") {
+    id++;
+    vector<int> data;
+    for (int i = 0; i < 10; i++) {
+        data.push_back(i * 2);
     }
+    vector<int> writed_data = load_int_vector_helper(id);
+    REQUIRE(data == writed_data);
+}
+
+TEST_CASE("Able to write vector of type <double> after loading map from file", "[data_store]") {
+    id++;
+    vector<double> data;
+    for (int i = 10; i > 0; i--) {
+        data.push_back(i / 3.22);
+    }
+    vector<double> writed_data = load_double_vector_helper(id);
+    REQUIRE(data == writed_data);
+}
+
+TEST_CASE("Able to write vector of type <string> after loading map from file", "[data_store]") {
+    id++;
+    vector<string> data;
+    string s = "data";
+    for (char i = 'a'; i < 'g'; i++) {
+        data.push_back(s + i);
+    }
+    vector<string> writed_data = load_string_vector_helper(id);
+    REQUIRE(data == writed_data);
 }
