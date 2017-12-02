@@ -107,34 +107,34 @@ TEST_CASE("Get throw during loading deleted data", "[data_delete]") {
     REQUIRE_THROWS(load_helper<int>(id));
 }
 
-TEST_CASE("Able to load map from file", "[map_load]") {
+TEST_CASE("Load map from file", "[map_load]") {
     indexes.clear();
     load_map_from_file();
     get_deleted_indexes();
 }
 
-TEST_CASE("Able to write data of type <int> after loading map from file", "[data_store]") {
+TEST_CASE("Able to write data of type <int> after loading map from file", "[data_load]") {
     id = 1;
     int data = 10;
     int writed_data = load_helper<int>(id);
     REQUIRE(data == writed_data);
 }
 
-TEST_CASE("Able to write data of type <double> after loading map from file", "[data_store]") {
+TEST_CASE("Able to write data of type <double> after loading map from file", "[data_load]") {
     id++;
     double data = 10.105;
     double writed_data = load_helper<double>(id);
     REQUIRE(data == writed_data);
 }
 
-TEST_CASE("Able to write data of type <string> after loading map from file", "[data_store]") {
+TEST_CASE("Able to write data of type <string> after loading map from file", "[data_load]") {
     id++;
     string data = "database is working perfectly (yes(no)) GG > WP";
     string writed_data = load_helper<string>(id);
     REQUIRE(data == writed_data);
 }
 
-TEST_CASE("Able to write vector of type <int> after loading map from file", "[data_store]") {
+TEST_CASE("Able to write vector of type <int> after loading map from file", "[data_load]") {
     id++;
     vector<int> data;
     for (int i = 0; i < 10; i++) {
@@ -144,7 +144,7 @@ TEST_CASE("Able to write vector of type <int> after loading map from file", "[da
     REQUIRE(data == writed_data);
 }
 
-TEST_CASE("Able to write vector of type <double> after loading map from file", "[data_store]") {
+TEST_CASE("Able to write vector of type <double> after loading map from file", "[data_load]") {
     id++;
     vector<double> data;
     for (int i = 10; i > 0; i--) {
@@ -154,7 +154,7 @@ TEST_CASE("Able to write vector of type <double> after loading map from file", "
     REQUIRE(data == writed_data);
 }
 
-TEST_CASE("Able to write vector of type <string> after loading map from file", "[data_store]") {
+TEST_CASE("Able to write vector of type <string> after loading map from file", "[data_load]") {
     id++;
     vector<string> data;
     string s = "data";

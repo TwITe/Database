@@ -173,7 +173,7 @@ void save_current_id_in_map_to_file(int id) {
     file << "--" << "\n";
 }
 
-bool load_map_from_file() {
+void load_map_from_file() {
     int id;
     index_data current_id;
     ifstream file;
@@ -228,7 +228,6 @@ bool load_map_from_file() {
             current_id.end_reading_positions.clear();
         }
     }
-    return true;
 }
 
 void get_deleted_indexes() {
