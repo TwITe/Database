@@ -38,14 +38,11 @@ bool check_path() {
 }
 
 bool check_settings() {
-    if (!check_path()) {
-        return false;
-    }
-    return true;
+    return check_path();
 }
 
-void set_data_file_size(unsigned int user_data_size) {
-    data_file_size = user_data_size;
+void set_data_file_size(unsigned int data_size) {
+    data_file_size = data_size;
 }
 
 void set_path(const string &saving_path) {
@@ -88,7 +85,7 @@ bool check_if_current_id_is_already_exists(int id) {
 }
 
 bool check_if_current_id_was_deleted(int id) {
-    return indexes[id].deleted == true;
+    return indexes[id].deleted;
 }
 
 void delete_id(int id) {
@@ -174,6 +171,7 @@ void load_map_from_file() {
     file.open(file_name, ios::in);
     string s;
     int a;
+    size_t c;
     streamoff b;
     while (getline (file, s)) {
         if (s == "id") {
@@ -213,8 +211,8 @@ void load_map_from_file() {
         if (s == "data_size") {
             getline(file, s);
             istringstream iss(s);
-            iss >> a;
-            current_id.data_size = a;
+            iss >> c;
+            current_id.data_size = c;
             indexes[id] = current_id;
             current_id.file_names.clear();
             current_id.start_reading_positions.clear();
@@ -254,11 +252,11 @@ void delete_current_id_from_deleted_indexes_file(int id) {
 	rename(temp_file_name.c_str(), file_name.c_str());
 }
 
-void initialize_db(const string& path, int data_file_size) {
-	set_path(path);
-	set_data_file_size(data_file_size);
-	load_map_from_file();
-	get_deleted_indexes();
+void initialize_db(const string& user_path, unsigned int user_data_file_size) {
+    set_path(user_path);
+    set_data_file_size(user_data_file_size);
+    load_map_from_file();
+    get_deleted_indexes();
 }
 
 bool store(int id, void* data, size_t data_size) {
