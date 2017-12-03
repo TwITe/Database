@@ -87,6 +87,14 @@ bool check_if_current_id_was_deleted(int id) {
 
 void delete_id(int id) {
     indexes[id].deleted = true;
+    for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
+        string current_file = indexes[id].file_names[i];
+        streamoff start_read_pos = indexes[id].start_reading_positions[i];
+        streamoff end_read_pos = indexes[id].end_reading_positions[i];
+        if (end_read_pos - start_read_pos == data_file_size) {
+            remove(current_file.c_str());
+        }
+    }
     string file_name = path + "deleted_indexes.dat";
     ofstream file;
     file.open(file_name, ios::out | ios::app);
