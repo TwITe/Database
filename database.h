@@ -88,7 +88,7 @@ bool check_if_current_id_is_already_exists(int id) {
 }
 
 bool check_if_current_id_was_deleted(int id) {
-    return indexes[id].deleted;
+    return indexes[id].deleted == true;
 }
 
 void delete_id(int id) {
@@ -271,7 +271,7 @@ void initialize_db(const string& path, int data_file_size) {
 bool store(int id, void* data, size_t data_size) {
     check_settings();
     if (check_if_current_id_is_already_exists(id)) {
-		if (check_if_current_id_was_deleted) {
+		if (check_if_current_id_was_deleted(id)) {
 			indexes.erase(id);
 			delete_current_id_from_deleted_indexes_file(id);
 			indexes[id].deleted = false;
