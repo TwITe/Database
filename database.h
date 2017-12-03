@@ -91,7 +91,7 @@ bool check_if_current_id_was_deleted(int id) {
     return indexes[id].deleted;
 }
 
-bool delete_id(int id) {
+void delete_id(int id) {
     indexes[id].deleted = true;
     string file_name = path + "deleted_indexes.dat";
     ofstream file;
@@ -238,12 +238,47 @@ void get_deleted_indexes() {
     while (file >> id) {
         indexes[id].deleted = true;
     }
+	file.close();
+}
+
+void delete_current_id_from_deleted_indexes_file(int id) {
+	ifstream file;
+	ofstream tempfile;
+	string file_name = path + "deleted_indexes.dat";
+	string temp_file_name = path + "deleted_indexes_temp.dat";
+	tempfile.open(temp_file_name);
+	file.open(file_name);
+	string deleteline = to_string(id);
+	string line;
+	while (getline(file, line)) {
+		if (line != deleteline) {
+			tempfile << line << "\n";
+		}
+	}
+	file.close();
+	tempfile.close();
+	remove(file_name.c_str());
+	rename(temp_file_name.c_str(), file_name.c_str());
+}
+
+void initialize_db(const string& path, int data_file_size) {
+	set_path(path);
+	set_data_file_size(data_file_size);
+	load_map_from_file();
+	get_deleted_indexes();
 }
 
 bool store(int id, void* data, size_t data_size) {
     check_settings();
     if (check_if_current_id_is_already_exists(id)) {
-        throw runtime_error("Current id is already in use");
+		if (check_if_current_id_was_deleted) {
+			indexes.erase(id);
+			delete_current_id_from_deleted_indexes_file(id);
+			indexes[id].deleted = false;
+		}
+		else {
+			throw runtime_error("Current id is already in use");
+		}
     }
     save_current_data_size(id, data_size);
     write_data(id, data, data_size);
