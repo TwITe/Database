@@ -1,6 +1,3 @@
-//It's database library
-//Call function "set_data_filesize" to set the default size of the data file
-//Call function "set_path" to set the path for saving data files
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -274,6 +271,7 @@ bool store(int id, void* data, size_t data_size) {
     save_current_data_size(id, data_size);
     write_data(id, data, data_size);
     save_current_id_in_map_to_file(id);
+    data_file_number = -1;
     return true;
 }
 
