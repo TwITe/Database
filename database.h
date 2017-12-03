@@ -99,12 +99,6 @@ void delete_id(int id) {
     file << id << "\n";
 }
 
-void is_data_size_invalid(size_t current_data_size) {
-    if (current_data_size < 0) {
-        cerr << "The data size is invalid, please check it";
-    }
-}
-
 void write_data_to_file(void* data, FILE* data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file,  streamoff cur_pos_in_the_file, int id) {
     streamoff start_position = cur_pos_in_the_file;
 	data = ((static_cast<char*>(data))) + last_written_byte_position;
@@ -142,7 +136,6 @@ bool write_data(int id, void* data, size_t current_data_size) {
                                cur_pos_in_the_file, id);
         }
         current_data_size -= bytes_number_to_write;
-        is_data_size_invalid(current_data_size);
         fclose(data_file);
     }
     return true;
