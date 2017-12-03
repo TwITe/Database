@@ -87,11 +87,21 @@ bool check_if_current_id_was_deleted(int id) {
 
 void delete_id(int id) {
     indexes[id].deleted = true;
+    int ab = indexes[id].file_names.size();
     for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
         string current_file = indexes[id].file_names[i];
         streamoff start_read_pos = indexes[id].start_reading_positions[i];
         streamoff end_read_pos = indexes[id].end_reading_positions[i];
-        if (end_read_pos - start_read_pos == data_file_size) {
+        if (i == indexes[id].file_names.size() - 1) {
+            FILE* file;
+            file = fopen(current_file.c_str(), "a+b");
+            size_t file_free_space = get_file_free_space(file);
+            if (static_cast<unsigned int>(data_file_size - end_read_pos) == file_free_space) {
+                remove(current_file.c_str());
+            }
+            fclose(file);
+        }
+        else if (end_read_pos - start_read_pos == data_file_size) {
             remove(current_file.c_str());
         }
     }
