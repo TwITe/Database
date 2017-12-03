@@ -47,8 +47,6 @@ TEST_CASE("Able to write data of type <int>", "[data_store]") {
     REQUIRE(data == writed_data);
 }
 
-
-
 TEST_CASE("Able to write data of type <double>", "[data_store]") {
     id++;
     double data = 10.105;
@@ -105,6 +103,17 @@ TEST_CASE("Get throw during loading deleted data", "[data_delete]") {
     store_helper(id, data);
     delete_id(id);
     REQUIRE_THROWS(load_helper<int>(id));
+}
+
+TEST_CASE("Able to store data with the same id after deleting old data", "[data_delete]") {
+    id++;
+    int data = 5525;
+    store_helper(id, data);
+    delete_id(id);
+    data = 8134971;
+    store_helper(id, data);
+    int writed_data = load_helper<int>(id);
+    REQUIRE(data == writed_data);
 }
 
 TEST_CASE("Load map from file", "[map_load]") {
