@@ -87,7 +87,6 @@ bool check_if_current_id_was_deleted(int id) {
 
 void delete_id(int id) {
     indexes[id].deleted = true;
-    int ab = indexes[id].file_names.size();
     for (unsigned int i = 0; i < indexes[id].file_names.size(); i++) {
         string current_file = indexes[id].file_names[i];
         streamoff start_read_pos = indexes[id].start_reading_positions[i];
@@ -96,7 +95,7 @@ void delete_id(int id) {
             FILE* file;
             file = fopen(current_file.c_str(), "a+b");
             size_t file_free_space = get_file_free_space(file);
-            if (static_cast<unsigned int>(data_file_size - end_read_pos) == file_free_space) {
+            if (static_cast<unsigned int>(data_file_size - end_read_pos) == file_free_space && start_read_pos == 0) {
                 remove(current_file.c_str());
             }
             fclose(file);
@@ -367,7 +366,7 @@ bool store_helper(int id, const vector <string> &data) {
         number[i] = *(charnum + i);
     }
     char* casted_vector = new char[data_size + 1];
-    memset(&casted_vector[0], 0, data_size);
+    memset(&casted_vector[0], 0, data_size + 1);
     for (int i = 0; i < 10; i++) {
         casted_vector[i] = number[i];
     }
@@ -403,7 +402,7 @@ void* load(int id) {
         data_file = fopen(current_filename, "a+b");
         void* current_read_data = malloc(reading_bytes_number);
         fseek(data_file, static_cast<long int>(start_reading_position), SEEK_SET);
-        fread(current_read_data, 1, reading_bytes_number, data_file);
+        fread(current_read_data, sizeof(char), reading_bytes_number, data_file);
         char* cur_pos = static_cast<char*>(return_data) + last_written_byte_position_in_main_buffer;
         memcpy(cur_pos, current_read_data, reading_bytes_number);
         last_written_byte_position_in_main_buffer += reading_bytes_number;

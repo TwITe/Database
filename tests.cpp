@@ -20,7 +20,7 @@ TEST_CASE("Get throw for invalid settings", "[general]") {
 }
 
 TEST_CASE("Do not get throw for valid settings", "[general]") {
-    preset_settings();
+    initialize_db("/home/twite/CLionProjects/Database/data_files/", 20);
     REQUIRE(check_settings());
 }
 
@@ -42,7 +42,7 @@ TEST_CASE("Data writing function working correctly", "[data_store]") {
 TEST_CASE("Able to write data of type <int>", "[data_store]") {
     id++;
     int data = 10;
-    REQUIRE(store_helper(id, data));
+    store_helper(id, data);
     int writed_data = load_helper<int>(id);
     REQUIRE(data == writed_data);
 }
