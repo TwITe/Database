@@ -7,7 +7,6 @@
 ## Установка
 
 Клонируйте данный репозиторий с GitHub:
-
     ```
     mkdir ~/database
     
@@ -15,7 +14,6 @@
     
     git clone https://github.com/TwITe/Database.git
     ```
-
 ## Быстрый старт
 
   ```c++
