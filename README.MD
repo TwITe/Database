@@ -70,10 +70,20 @@ store_helper(int id, <T> data) - хранение данных типов int, d
 
 *Список хелперов для загрузки данных*
  ```c++
-- load_helper<int>(id) - загрузка данных типа int
-- load_helper<double>(id) - загрузка данных типа double
-- load_helper<string>(id) - загрузка данных типа string
-- load_int_vector_helper(id) - загрузка вектора типа int
-- load_double_vector_helper(id) - загрузка вектора типа double
-- load_string_vector_helper(id) - загрузка вектора типа string
+load_helper<int>(id) - загрузка данных типа int
+```
+ ```c++
+load_helper<double>(id) - загрузка данных типа double
+```
+ ```c++
+load_helper<string>(id) - загрузка данных типа string
+```
+ ```c++
+load_int_vector_helper(id) - загрузка вектора типа int
+```
+ ```c++
+load_double_vector_helper(id) - загрузка вектора типа double
+```
+ ```c++
+load_string_vector_helper(id) - загрузка вектора типа string
 ```
