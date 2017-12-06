@@ -55,7 +55,8 @@ git clone https://github.com/TwITe/Database.git
    ```c++
  void* load(int id) - загрузка данных типа void* по указанному id
 ```
-  ```c++void delete_id(int id) - удаление данных по указанному id из базы данных
+  ```c++
+  void delete_id(int id) - удаление данных по указанному id из базы данных
   ```
 
 ---
