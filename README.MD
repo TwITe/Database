@@ -68,10 +68,10 @@ load_helper<int>(id) - загрузка данных типа int
 ```
  ```c++
 load_helper<double>(id) - загрузка данных типа double
-``` -
+```
  ```c++
-load_helper<string>(id)
-``` - загрузка данных типа string
+load_helper<string>(id) - загрузка данных типа string
+```
  ```c++
 load_int_vector_helper(id) - загрузка вектора типа int
 ```
