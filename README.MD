@@ -7,9 +7,12 @@
 ## Установка
 
 Клонируйте данный репозиторий с GitHub:
+
     ```
     mkdir ~/database
+    
     cd ~/database
+    
     git clone https://github.com/TwITe/Database.git
     ```
 
