@@ -49,6 +49,7 @@ git clone https://github.com/TwITe/Database.git
 
 - bool store(int id, void* data, size_t data_size) - сохранение данных типа void*
 - void* load(int id) - загрузка данных типа void* по указанному id
+- void delete_id(int id) - удаление данных по указанному id из базы данных
 
 ---
 
