@@ -7,7 +7,6 @@
 ## Установка
 
 Клонируйте данный репозиторий с GitHub:
-
     ```
     mkdir ~/database
     
@@ -15,14 +14,12 @@
     
     git clone https://github.com/TwITe/Database.git
     ```
-    
 ## Быстрый старт
 
   ```c++
   int main() {
       initialize_db("/home/database/data_files/", 25);
-      string b = "database test";
-      store_helper(2, b);
+      store_helper(2, "hello word");
       cout << load_helper<string>(2) << endl;
   }
   ```
