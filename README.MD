@@ -56,8 +56,7 @@ git clone https://github.com/TwITe/Database.git
 ---
 
 *Список хелперов для хранения данных*
--
-```c++
+- ```c++
 store_helper(int id, <T> data) - хранение данных типов int, double, string, vector \<int>\, vector \<double>\, vector \<string>\
 ```
 
