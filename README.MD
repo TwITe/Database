@@ -8,13 +8,11 @@
 
 Клонируйте данный репозиторий с GitHub:
 
-    ```
-    mkdir ~/database
+    ```mkdir ~/database
     
     cd ~/database
     
-    git clone https://github.com/TwITe/Database.git
-    ```
+    git clone https://github.com/TwITe/Database.git```
     
 ## Быстрый старт
 
