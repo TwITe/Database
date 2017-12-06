@@ -7,7 +7,7 @@
 ## Установка
 
 Загрузите данный репозиторий с GitHub:
- [База данных] (https://github.com/TwITe/Database/archive/master.zip)
+ [База данных](https://github.com/TwITe/Database/archive/master.zip)
 
 ## Начало работы
 
