@@ -7,26 +7,29 @@
 ## Установка
 
 Клонируйте данный репозиторий с GitHub:
-    ```
-    mkdir ~/database
-    cd ~/database
-    git clone https://github.com/TwITe/Database.git
-    ```
+
+```
+mkdir ~/database
+cd ~/database
+git clone https://github.com/TwITe/Database.git
+```
 
 ## Быстрый старт
 
   ```c++
+  #include "database.h"
+  using namespace std;
+
   int main() {
       initialize_db("/home/database/data_files/", 25);
-      string b = "database test";
-      store_helper(2, b);
+      store_helper(2, "hello world!");
       cout << load_helper<string>(2) << endl;
   }
   ```
 
   ***Вывод:***
   ```
-   database test
+   hello world!
   ```
 
 ## Использование
@@ -44,8 +47,9 @@
 
 **API базы данных:**
 
-- store(data) - сохранение данных типа void*
-- load(id) - загрузка данных типа void* по указанному id
+- bool store(int id, void* data, size_t data_size) - сохранение данных типа void*
+- void* load(int id) - загрузка данных типа void* по указанному id
+- void delete_id(int id) - удаление данных по указанному id из базы данных
 
 ---
 
@@ -61,3 +65,16 @@
 - load_int_vector_helper(id)
 - load_double_vector_helper(id)
 - load_string_vector_helper(id)
+
+**Список хелперов для хранения данных**
+- store_helper(id, data) - хранение данных типов int, double, string, vector \<int>\, vector \<double>\, vector \<string>\
+
+---
+
+**Список хелперов для загрузки данных**
+- load_helper\<int>\(id) - загрузка данных типа int
+- load_helper\<double>\(id) -  - загрузка данных типа double
+- load_helper\<string>\(id) - загрузка данных типа string
+- load_int_vector_helper(id) - загрузка вектора типа int
+- load_double_vector_helper(id) - загрузка вектора типа double
+- load_string_vector_helper(id) - загрузка вектора типа string
