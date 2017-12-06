@@ -34,7 +34,7 @@
 
 **Список хелперов для хранения данных**
 - store_helper(id, data)
-Данная функция поддерживает хранение таких типов данных, как: int, double, string, vector <int>, vector <double>, vector <string>
+Данная функция поддерживает хранение таких типов данных, как: \int, double, string, vector <int>, vector <double>, vector <string>\
 
 ---
 
