@@ -22,7 +22,9 @@ git clone https://github.com/TwITe/Database.git
 
   int main() {
       initialize_db("/home/database/data_files/", 25);
+
       store_helper(2, "hello world!");
+
       cout << load_helper<string>(2) << endl;
   }
   ```
@@ -53,28 +55,15 @@ git clone https://github.com/TwITe/Database.git
 
 ---
 
-*Список хелперов для хранения данных*
-- store_helper(id, data)
-
----
-
-*Список хелперов для загрузки данных*
-- load_helper\<int>\(id)
-- load_helper\<double>\(id)
-- load_helper\<string>\(id)
-- load_int_vector_helper(id)
-- load_double_vector_helper(id)
-- load_string_vector_helper(id)
-
 **Список хелперов для хранения данных**
-- store_helper(id, data) - хранение данных типов int, double, string, vector \<int>\, vector \<double>\, vector \<string>\
+- ```c++store_helper(int id, <T> data)``` - хранение данных типов int, double, string, vector \<int>\, vector \<double>\, vector \<string>\
 
 ---
 
 **Список хелперов для загрузки данных**
-- load_helper\<int>\(id) - загрузка данных типа int
-- load_helper\<double>\(id) -  - загрузка данных типа double
-- load_helper\<string>\(id) - загрузка данных типа string
-- load_int_vector_helper(id) - загрузка вектора типа int
-- load_double_vector_helper(id) - загрузка вектора типа double
-- load_string_vector_helper(id) - загрузка вектора типа string
+- ```c++load_helper\<int>\(id)``` - загрузка данных типа int
+- ```c++load_helper\<double>\(id)``` -  - загрузка данных типа double
+- ```c++load_helper\<string>\(id)``` - загрузка данных типа string
+- ```c++load_int_vector_helper(id)``` - загрузка вектора типа int
+- ```c++load_double_vector_helper(id)``` - загрузка вектора типа double
+- ```c++load_string_vector_helper(id)``` - загрузка вектора типа string
