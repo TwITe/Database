@@ -70,7 +70,7 @@ int main() {
 
     s = "string was saved with the same id as earlier";
 
-    store_helper(2, b);
+    store_helper(2, s);
     cout << load_helper<string>(2); //string was saved with the same id as earlier
 }
 ```
