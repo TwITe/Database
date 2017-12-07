@@ -88,6 +88,8 @@ int main() {
   initialize_db("c:\\users\\user_name\\documents\\visual studio 2017\\projects\\database\\data_files\\", 20)
   ```
 
+---
+
 **API базы данных:**
 
 Сохранение данных типа ***void\****
