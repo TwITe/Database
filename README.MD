@@ -90,9 +90,9 @@ int main() {
 
 **API базы данных:**
 
-Сохранение данных типа *void\**
+Сохранение данных типа *void\*\*
   ```c++
-  bool store(int id, void* data, size_t data_size) -
+  bool store(int id, void* data, size_t data_size)
   ```
    ```c++
  void* load(int id) - загрузка данных типа void* по указанному id
