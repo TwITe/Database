@@ -1,7 +1,7 @@
 # База данных
 
 Это простейшая имплементация базы данных, реализованная в виде библиотеки.
-К проекту прилагаются уже готовые тесты, использующие *framework* ***Catch***, который также включен в проект.
+К проекту прилагаются уже готовые тесты, использующие framework ***Catch***, который также включен в проект.
 Особенностью является то, что база данных полностью кроссплатформенна.
 
 ## Установка
@@ -102,29 +102,42 @@ int main() {
 
 ---
 
-*Список хелперов для хранения данных*
+*Список хелперов для сохранения данных*
+Сохранение данных типов int, double, string, vector \<int>\, vector \<double>\, vector \<string>\
 ```c++
-store_helper(int id, <T> data) - хранение данных типов int, double, string, vector <int>, vector <double>, vector <string>
+store_helper(int id, <T> data)
 ```
 
 ---
 
 *Список хелперов для загрузки данных*
+
+Загрузка данных типа int
  ```c++
-load_helper<int>(id) - загрузка данных типа int
+load_helper<int>(id)
 ```
+
+Загрузка данных типа double
  ```c++
-load_helper<double>(id) - загрузка данных типа double
+load_helper<double>(id)
 ```
+
+Загрузка данных типа string
  ```c++
-load_helper<string>(id) - загрузка данных типа string
+load_helper<string>(id)
 ```
+
+Загрузка вектора типа int
  ```c++
-load_int_vector_helper(id) - загрузка вектора типа int
+load_int_vector_helper(id)
 ```
+
+Загрузка вектора типа double
  ```c++
-load_double_vector_helper(id) - загрузка вектора типа double
+load_double_vector_helper(id)
 ```
+
+Загрузка вектора типа string
  ```c++
-load_string_vector_helper(id) - загрузка вектора типа string
+load_string_vector_helper(id)
 ```
