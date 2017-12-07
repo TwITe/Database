@@ -64,14 +64,14 @@ int main() {
     string b = "database test";
 
     store_helper(2, b);
-    cout << load_helper<string>(2) << endl;
+    cout << load_helper<string>(2) << endl; //database test
 
     delete_id(2);
 
     b = "string was saved with the same id as earlier";
 
     store_helper(2, b);
-    cout << load_helper<string>(2) << endl;
+    cout << load_helper<string>(2); //string was saved with the same id as earlier
 }
 ```
 
