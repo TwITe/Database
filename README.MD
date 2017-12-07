@@ -120,30 +120,30 @@ store_helper(int id, <T> data)
 
 Загрузка данных типа ***int***
  ```c++
-load_helper<int>(id)
+load_helper<int>(int id)
 ```
 
 Загрузка данных типа ***double***
  ```c++
-load_helper<double>(id)
+load_helper<double>(int id)
 ```
 
 Загрузка данных типа ***string***
  ```c++
-load_helper<string>(id)
+load_helper<string>(int id)
 ```
 
 Загрузка *вектора* типа ***int***
  ```c++
-load_int_vector_helper(id)
+load_int_vector_helper(int id)
 ```
 
 Загрузка *вектора* типа ***double***
  ```c++
-load_double_vector_helper(id)
+load_double_vector_helper(int id)
 ```
 
 Загрузка *вектора* типа ***string***
  ```c++
-load_string_vector_helper(id)
+load_string_vector_helper(int id)
 ```
