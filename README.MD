@@ -90,15 +90,19 @@ int main() {
 
 **API базы данных:**
 
-Сохранение данных типа *void\*\*
+Сохранение данных типа *void\**
   ```c++
   bool store(int id, void* data, size_t data_size)
   ```
+
+Загрузка данных типа *void\** по указанному id
    ```c++
- void* load(int id) - загрузка данных типа void* по указанному id
+ void* load(int id)
 ```
+
+Удаление данных по указанному id из базы данных
   ```c++
-  void delete_id(int id) - удаление данных по указанному id из базы данных
+  void delete_id(int id)
   ```
 
 ---
