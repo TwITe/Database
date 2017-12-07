@@ -30,7 +30,7 @@ git clone https://github.com/TwITe/Database.git
   }
   ```
 
-Сохранение *вектора* типа ***int***
+Сохранение *вектора* типа **int**
   ```c++
   #include "database.h"
   using namespace std;
