@@ -103,7 +103,8 @@ int main() {
 ---
 
 *Список хелперов для сохранения данных*
-Сохранение данных типов int, double, string, vector \<int>\, vector \<double>\, vector \<string>\
+
+Сохранение данных типов ***int, double, string, vector \<int>\, vector \<double>\, vector \<string>\***
 ```c++
 store_helper(int id, <T> data)
 ```
@@ -112,32 +113,32 @@ store_helper(int id, <T> data)
 
 *Список хелперов для загрузки данных*
 
-Загрузка данных типа int
+Загрузка данных типа ***int***
  ```c++
 load_helper<int>(id)
 ```
 
-Загрузка данных типа double
+Загрузка данных типа ***double***
  ```c++
 load_helper<double>(id)
 ```
 
-Загрузка данных типа string
+Загрузка данных типа ***string***
  ```c++
 load_helper<string>(id)
 ```
 
-Загрузка вектора типа int
+Загрузка вектора типа ***int***
  ```c++
 load_int_vector_helper(id)
 ```
 
-Загрузка вектора типа double
+Загрузка вектора типа ***double***
  ```c++
 load_double_vector_helper(id)
 ```
 
-Загрузка вектора типа string
+Загрузка вектора типа ***string***
  ```c++
 load_string_vector_helper(id)
 ```
