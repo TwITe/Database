@@ -104,7 +104,7 @@ int main() {
 
 *Список хелперов для сохранения данных*
 
-Сохранение данных типов **_int_, _double_, _string_, vector \<_int_>\, vector \<_double_>\, vector \<_string_>\ **
+Сохранение данных типов **_int_, _double_, _string_, vector \<_int_>\, vector \<_double_>\, vector \<_string_>**
 ```c++
 store_helper(int id, <T> data)
 ```
