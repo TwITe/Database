@@ -16,6 +16,7 @@ git clone https://github.com/TwITe/Database.git
 
 ## Быстрый старт
 
+Сохранение строки
   ```c++
   #include "database.h"
   using namespace std;
@@ -25,14 +26,54 @@ git clone https://github.com/TwITe/Database.git
 
       store_helper(2, "hello world!");
 
-      cout << load_helper<string>(2) << endl;
+      cout << load_helper<string>(2); //hello world!
   }
   ```
 
-  ***Вывод:***
+Сохранение вектора типа int
+  ```c++
+  #include "database.h"
+  using namespace std;
+
+  int main() {
+      initialize_db("/home/database/data_files/", 25);
+
+      vector <int> test;
+      for (int i = 100; i > 0; i-= 10) {
+          test.push_back(i / 2);
+      }
+
+      store_helper(3, c);
+
+      vector <int> loaded_vector = load_int_vector_helper(3);
+      for (auto i: loaded_vector) {
+          cout << i << " "; //50 45 40 35 30 25 20 15 10 5
+      }
+  }
   ```
-   hello world!
-  ```
+
+Удаление существующего id и сохранение новых данных
+
+```c++
+#include "database.h"
+using namespace std;
+
+int main() {
+    initialize_db("/home/twite/CLionProjects/Database/data_files/", 25);
+
+    string b = "database test";
+
+    store_helper(2, b);
+    cout << load_helper<string>(2) << endl;
+
+    delete_id(2);
+
+    b = "string was saved with the same id as earlier";
+
+    store_helper(2, b);
+    cout << load_helper<string>(2) << endl;
+}
+```
 
 ## Использование
 
