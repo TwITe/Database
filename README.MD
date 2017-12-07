@@ -92,6 +92,8 @@ int main() {
 
 **API базы данных:**
 
+*Базовые функции:*
+
 Сохранение данных типа ***void\****
   ```c++
   bool store(int id, void* data, size_t data_size)
