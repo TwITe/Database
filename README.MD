@@ -61,14 +61,14 @@ using namespace std;
 int main() {
     initialize_db("/home/twite/CLionProjects/Database/data_files/", 25);
 
-    string b = "database test";
+    string s = "database test";
 
-    store_helper(2, b);
+    store_helper(2, s);
     cout << load_helper<string>(2) << endl; //database test
 
     delete_id(2);
 
-    b = "string was saved with the same id as earlier";
+    s = "string was saved with the same id as earlier";
 
     store_helper(2, b);
     cout << load_helper<string>(2); //string was saved with the same id as earlier
