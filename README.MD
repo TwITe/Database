@@ -128,17 +128,17 @@ load_helper<double>(id)
 load_helper<string>(id)
 ```
 
-Загрузка вектора типа ***int***
+Загрузка *вектора* типа ***int***
  ```c++
 load_int_vector_helper(id)
 ```
 
-Загрузка вектора типа ***double***
+Загрузка *вектора* типа ***double***
  ```c++
 load_double_vector_helper(id)
 ```
 
-Загрузка вектора типа ***string***
+Загрузка *вектора* типа ***string***
  ```c++
 load_string_vector_helper(id)
 ```
