@@ -42,8 +42,8 @@ void set_data_file_size(unsigned int data_size) {
     data_file_size = data_size;
 }
 
-void set_path(const string &saving_path) {
-	path = saving_path;
+void set_path(const string& saving_path) {
+    path = saving_path;
 }
 
 string get_new_file_path() {
@@ -110,7 +110,7 @@ void delete_id(int id) {
     file << id << "\n";
 }
 
-void write_data_to_file(void* data, FILE* data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file,  streamoff cur_pos_in_the_file, int id) {
+void write_data_to_file(void* data, FILE* &data_file, int last_written_byte_position, size_t bytes_number_to_write, const string& current_file,  streamoff cur_pos_in_the_file, int id) {
     streamoff start_position = cur_pos_in_the_file;
 	data = ((static_cast<char*>(data))) + last_written_byte_position;
     fwrite(data, 1, bytes_number_to_write, data_file);
@@ -351,10 +351,10 @@ bool store_helper(int id, const vector <double> &data) {
 bool store_helper(int id, const vector <string> &data) {
     size_t data_size = 10;
     vector <int> string_sizes;
-    string_sizes.push_back(data.size());
+    string_sizes.push_back(static_cast<int>(data.size()));
     for (const auto &str: data) {
         data_size += str.size();
-        string_sizes.push_back(str.size());
+        string_sizes.push_back(static_cast<int>(str.size()));
     }
     int meta_data_id = rand();
     store_helper(meta_data_id, string_sizes);
@@ -490,7 +490,7 @@ vector <string> load_string_vector_helper(int id) {
         string_sizes.push_back(meta_data[10 + i]);
     }
     char* iter = main_data + 10;
-    vector <string> return_data(strings_number);
+    vector <string> return_data(static_cast<unsigned long>(strings_number));
     for (int i = 0; i < strings_number; i++) {
         for (int ii = 0; ii < string_sizes[i]; ii++) {
             return_data[i].push_back(*iter);
