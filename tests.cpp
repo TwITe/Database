@@ -6,10 +6,10 @@ int id = -1;
 
 void preset_settings() {
 #ifdef _WIN32
-    set_path("c:\\users\\twite\\documents\\visual studio 2017\\projects\\database\\data_files\\");
+    set_path("c:\\users\\root\\documents\\visual studio 2017\\projects\\database\\data_files\\");
 #endif
 #ifdef __linux__
-    set_path("/home/twite/CLionProjects/Database/data_files/");
+    set_path("/home/root/CLionProjects/Database/data_files/");
 #endif
     set_data_file_size(20);
 }
@@ -20,7 +20,7 @@ TEST_CASE("Get throw for invalid settings", "[general]") {
 }
 
 TEST_CASE("Do not get throw for valid settings", "[general]") {
-    initialize_db("/home/twite/CLionProjects/Database/data_files/", 20);
+    initialize_db("/home/root/CLionProjects/Database/data_files/", 20);
     REQUIRE(check_settings());
 }
 
