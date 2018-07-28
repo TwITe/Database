@@ -59,7 +59,7 @@ git clone https://github.com/TwITe/Database.git
 using namespace std;
 
 int main() {
-    initialize_db("/home/twite/CLionProjects/Database/data_files/", 25);
+    initialize_db("/home/root/CLionProjects/Database/data_files/", 25);
 
     string s = "database test";
 
@@ -81,11 +81,11 @@ int main() {
 
  **Linux**:
  ```c++
- initialize_db("/home/user_name/CLionProjects/Database/data_files/", 20)
+ initialize_db("/home/<user_name>/CLionProjects/Database/data_files/", 20)
  ```
  **Windows**:
   ```c++
-  initialize_db("c:\\users\\user_name\\documents\\visual studio 2017\\projects\\database\\data_files\\", 20)
+  initialize_db("c:\\users\\<user_name>\\documents\\visual studio 2017\\projects\\database\\data_files\\", 20)
   ```
 
 ---
